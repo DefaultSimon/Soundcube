@@ -1,0 +1,14 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+Quart = "==0.7.1"
+tox = "~=3.6.0"
+hypercorn = "*"
+
+[requires]
+python_version = "3.7"

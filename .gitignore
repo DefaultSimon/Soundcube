@@ -1,0 +1,12 @@
+# Non-project files
+*.jpg
+*.png
+
+__pycache__/
+
+# IDE stuff
+.idea/
+
+# Ignore .ini, but not examples
+*.ini
+!*.example
