@@ -1,0 +1,5 @@
+[Server]
+app = "server:app"
+
+host = localhost
+port = 5000
