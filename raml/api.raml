@@ -1,0 +1,53 @@
+#%RAML 1.0
+---
+title: Soundcube 
+# baseUri: http://example.com/{version}
+version: v1
+
+/auth:
+  /login:
+    post:
+      body:
+        application/json:
+          description: Pass the global (admin) password for Soundcube and receive a unique token
+          example: |
+            {
+              "password": "password123"
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              description: Returns status and the token
+              example: |
+                {
+                  "status: "ok",
+                  "token": "4g7dshi348329zdsifh3"
+                }
+        403:
+          body:
+            application/json:
+              description: Returns the status
+              example: |
+                {
+                  "status": "forbidden"
+                }
+
+  /logout:
+    post:
+      body:
+        application/json:
+          description: Invalidate your token
+          example: |
+            {
+              "token": "4g7dshi348329zdsifh3"
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "status": "ok"
+                }
+
