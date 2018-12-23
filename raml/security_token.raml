@@ -1,0 +1,19 @@
+#%RAML 1.0 SecurityScheme
+uses:
+  Types: types.raml
+
+type: Pass Through
+displayName: Token-based authentication
+description: Authenticated via token, which is acquired with the /auth/login route
+describedBy:
+  headers:
+    Authorization:
+      description: Send your access token along with every request as the Authorization header
+      type: Types.Token
+  responses:
+    403:
+      description: Token is invalid
+    401:
+      description: Token is missing
+settings:
+  accessTokenUri: /auth/login

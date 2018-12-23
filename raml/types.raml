@@ -1,0 +1,22 @@
+#%RAML 1.0 Library
+types:
+  PlayType:
+    type: string
+    enum:
+      - immediately
+      - next
+
+  Token:
+    type: string
+    pattern: .{20}
+    maxLength: 20
+    minLength: 20
+    description: An access token
+    
+  Status:
+    type: string
+    enum:
+      - ok
+      - forbidden
+      - error
+      - noop

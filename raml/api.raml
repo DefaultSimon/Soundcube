@@ -1,33 +1,50 @@
 #%RAML 1.0
 ---
-title: Soundcube 
+title: Soundcube
 # baseUri: http://example.com/{version}
 version: v1
+
+uses:
+  Types: types.raml
+
+securitySchemes:
+  token: !include security_token.raml
+
 
 /auth:
   /login:
     post:
+      description: Pass the global (admin) password for Soundcube and receive a unique token
       body:
         application/json:
-          description: Pass the global (admin) password for Soundcube and receive a unique token
+          type: object
+          properties:
+            password: string
           example: |
             {
               "password": "password123"
             }
       responses:
         200:
+          description: Returns status and the token
           body:
             application/json:
-              description: Returns status and the token
+              type: object
+              properties:
+                status: Types.Status
+                token: string
               example: |
                 {
-                  "status: "ok",
+                  "status": "ok",
                   "token": "4g7dshi348329zdsifh3"
                 }
         403:
+          description: Returns the status
           body:
             application/json:
-              description: Returns the status
+              type: object
+              properties:
+                status: Types.Status
               example: |
                 {
                   "status": "forbidden"
@@ -35,9 +52,11 @@ version: v1
 
   /logout:
     post:
+      description: Invalidates your token
       body:
         application/json:
-          description: Invalidate your token
+          properties:
+            token: string
           example: |
             {
               "token": "4g7dshi348329zdsifh3"
@@ -46,8 +65,165 @@ version: v1
         200:
           body:
             application/json:
-              example: |
-                {
-                  "status": "ok"
-                }
+              properties:
+                status: Types.Status
+              example: { "status": "ok" }
 
+/music:
+  /queue:
+    /get:
+      get:
+        responses:
+          200:
+            description: Get the current queue
+            body:
+              application/json:
+                properties:
+                  queue: array
+                example: { "queue": [] }
+
+    /add:
+      post:
+        description: Add a song to the queue
+        body:
+          application/json:
+            type: object
+            properties:
+              song: string
+            example: |
+              {
+                "song": "song_id"
+              }
+
+    /remove:
+      delete:
+        description: Remove a song from the queue
+        body:
+          application/json:
+            type: object
+            properties:
+              song: string
+            example: |
+              {
+                "song": "song_id"
+              }
+
+    /move:
+      patch:
+        description: Move a song through the queue
+        body:
+          application/json:
+            type: object
+            properties:
+              song: string
+              new_index: integer
+            example: |
+              {
+                "song": "song_id",
+                "new_index": 5
+              }
+
+  /player:
+    /play:
+      post:
+        description: Add a song to play (immediately or after the current song)
+        body:
+          application/json:
+            properties:
+              song: string
+              type: Types.PlayType
+            example: |
+              {
+                "song": "song_id",
+                "type": "immediately"
+              }
+
+    /pause:
+      post:
+        description: Pause the current song
+        responses:
+          200:
+            description: Song has been paused
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "ok" }
+          204:
+            description: No song was playing
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "noop" }
+
+    /stop:
+      post:
+        description: Stop the current song
+        responses:
+          200:
+            description: Song has been stopped
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                examples:
+                  stopped: { "status": "ok" }
+                  notplaying: { "status": "noop" }
+
+    /next:
+      post:
+        description: Skip to the next song in queue
+        responses:
+          200:
+            description: Song skipped
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                examples:
+                  stopped: { "status": "ok" }
+                  notplaying: { "status": "noop" }
+
+    /previous:
+      post:
+        description: Play the previous song in queue
+        responses:
+          200:
+            description: Playing previous song
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "ok" }
+          405:
+            description: No previous song, can't play
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
+
+    /scrub:
+      patch:
+        description: Scrub the current song to a specified timestamp
+        body:
+          application/json:
+            properties:
+              time: time-only
+            example: { "time": "00:05:15"}
+        responses:
+          200:
+            description: Song playing from timestamp
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "ok" }
+          405:
+            description: No song is playing, can't scrub
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "noop" }
