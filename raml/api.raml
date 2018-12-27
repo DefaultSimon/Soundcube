@@ -10,11 +10,26 @@ uses:
 securitySchemes:
   token: !include security_token.raml
 
+securedBy: token
+
+/ping:
+  get:
+    securedBy: null
+    description: Responds with a pong, leting you know if the service is alive
+
+    responses:
+      200:
+        body:
+          application/json:
+            properties:
+              pong: string
+            example: { "pong": "ok" }
 
 /auth:
   /login:
     post:
-      description: Pass the global (admin) password for Soundcube and receive a unique token
+      securedBy: null
+      description: Provide the global (admin) password for Soundcube and receive a unique token for further requests
       body:
         application/json:
           type: object
@@ -26,7 +41,7 @@ securitySchemes:
             }
       responses:
         200:
-          description: Returns status and the token
+          description: Returns status and the token for future requests
           body:
             application/json:
               type: object
@@ -38,29 +53,26 @@ securitySchemes:
                   "status": "ok",
                   "token": "4g7dshi348329zdsifh3"
                 }
-        403:
-          description: Returns the status
+        401:
+          description: Password not provided or invalid
           body:
             application/json:
               type: object
               properties:
                 status: Types.Status
-              example: |
-                {
-                  "status": "forbidden"
-                }
+              example:  { "status": "error" }
+        403:
+          description: Password is not correct
+          body:
+            application/json:
+              type: object
+              properties:
+                status: Types.Status
+              example: { "status": "forbidden" }
 
   /logout:
     post:
       description: Invalidates your token
-      body:
-        application/json:
-          properties:
-            token: string
-          example: |
-            {
-              "token": "4g7dshi348329zdsifh3"
-            }
       responses:
         200:
           body:
