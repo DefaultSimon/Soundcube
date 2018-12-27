@@ -7,9 +7,9 @@ app = Quart(__name__)
 app.config.from_pyfile("soundcube/quartconfig_defaults.ini")
 app.config.from_pyfile("data/quartconfig.ini", silent=True)
 
-@app.route('/')
-async def hello():
-    return 'Hello World'
+# IMPORT BLUEPRINTS
+from soundcube.api.ping import app as bp_ping
 
+app.register_blueprint(bp_ping)
 
 # Run with `run.bat` (or `hypercorn server:app`)
