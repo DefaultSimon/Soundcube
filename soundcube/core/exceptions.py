@@ -13,3 +13,10 @@ class PlayerException(SoundcubeException):
     Raised for general player-related problems
     """
     pass
+
+
+class MediaNotLoaded(PlayerException):
+    """
+    Raised when the user tries playing an unloaded song
+    """
+    pass

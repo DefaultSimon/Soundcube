@@ -5,7 +5,7 @@ import asyncio
 import time
 
 from .youtube import get_audio_url, get_pafy
-from .exceptions import PlayerException
+from .exceptions import PlayerException, MediaNotLoaded
 from .utilities import resolve_time, clamp
 from ..config import DEFAULT_VOLUME, VOLUME_STEP
 
@@ -17,10 +17,11 @@ class Player:
         self.vlc: vlc.Instance = vlc.Instance()
         self.player: vlc.MediaPlayer = self.vlc.media_player_new()
 
-        self.loop = loop
+        self.loop: asyncio.AbstractEventLoop = loop
 
+        # self._current_media: vlc.Media = None
         self._current_volume = self._last_volume = DEFAULT_VOLUME
-        self._is_muted = False
+        self._is_muted: bool = False
 
     # TODO transform to proper typing
     async def play(self, url: str) -> object:
@@ -60,9 +61,22 @@ class Player:
             log.info("Tried to resume, was already playing")
             return False
 
+        if not self.player.get_media():
+            raise MediaNotLoaded("No song is loaded, can't resume")
+
         self.player.play()
         log.info("Song resumed")
         return True
+
+    async def stop(self) -> bool:
+        # First pause, then unload
+        if not self.player.get_media():
+            return False
+
+        was_playing = await self.pause()
+
+        self.player.set_media(None)
+        return was_playing
 
     ###################
     # VOLUME FUNCTIONS
