@@ -22,6 +22,11 @@ RELOAD = config.getboolean("Server", "reload_on_change")
 if RELOAD is True:
     arg_list.append("--reload")
 
+# Whether to turn on debug mode
+DEBUG = config.getboolean("Server", "debug")
+if DEBUG is True:
+    arg_list.append("--debug")
+
 
 # Add the app location at the end
 arg_list.append(APP)
