@@ -188,6 +188,13 @@ securedBy: token
                 properties:
                   status: Types.Status
                 example: { "status": "noop" }
+          441:
+            description: No song loaded
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
 
     /stop:
       post:
