@@ -4,12 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+tox = "~=3.6.0"
 
 [packages]
 Quart = "==0.7.1"
-tox = "~=3.6.0"
 hypercorn = "*"
 python-rapidjson = "*"
+pafy = "*"
+python-vlc = "*"
+youtube-dl = "*"
 
 [requires]
 python_version = "3.7"
