@@ -48,16 +48,20 @@ class Player:
 
     async def pause(self) -> bool:
         if not self.player.is_playing():
+            log.info("Tried to pause, was not even playing")
             return False
 
         self.player.pause()
+        log.info("Song paused")
         return True
 
     async def resume(self) -> bool:
         if self.player.is_playing():
+            log.info("Tried to resume, was already playing")
             return False
 
         self.player.play()
+        log.info("Song resumed")
         return True
 
     ###################

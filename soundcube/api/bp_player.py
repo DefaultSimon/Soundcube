@@ -16,7 +16,7 @@ player = Player()
 
 
 @app.route("/play", methods=["POST"])
-async def ping():
+async def player_play():
     """
     Full route: /music/player/play/
 
@@ -25,7 +25,6 @@ async def ping():
         type: Types.PlayType
 
     Add a song to play (immediately or after the current song)
-    :return: None
     """
     json = await get_json_from_request(request)
 
@@ -36,3 +35,42 @@ async def ping():
     await player.play(url)
 
     return with_status(None, 200, StatusType.OK)
+
+
+@app.route("/pause", methods=["POST"])
+async def player_pause():
+    """
+    Full route: /music/player/pause
+
+    Request (JSON): None
+
+    Pause the current song
+    :return:
+    """
+    # no json expected
+    did_pause = await player.pause()
+
+    if did_pause:
+        return with_status(None, 200, StatusType.OK)
+    else:
+        return with_status(None, 440, StatusType.NOOP)
+
+
+@app.route("/resume", methods=["POST"])
+async def player_resume():
+    """
+    Full route: /music/player/resume
+
+    Request (JSON): None
+
+    Resume the current song
+    """
+    # no json expected
+    did_resume = await player.resume()
+
+    if did_resume:
+        return with_status(None, 200, StatusType.OK)
+    else:
+        return with_status(None, 440, StatusType.NOOP)
+
+
