@@ -161,8 +161,28 @@ securedBy: token
                 properties:
                   status: Types.Status
                 example: { "status": "ok" }
-          204:
+
+          440:
             description: No song was playing
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "noop" }
+
+    /resume:
+      post:
+        description: Resumes the current song
+        responses:
+          200:
+            description: Song resumed
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "ok" }
+          440:
+            description: Song was already playing
             body:
               application/json:
                 properties:
@@ -179,9 +199,14 @@ securedBy: token
               application/json:
                 properties:
                   status: Types.Status
-                examples:
-                  stopped: { "status": "ok" }
-                  notplaying: { "status": "noop" }
+                example: { "status": "ok" }
+          440:
+            description: Song was already stopped
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "noop" }
 
     /next:
       post:
@@ -193,9 +218,14 @@ securedBy: token
               application/json:
                 properties:
                   status: Types.Status
-                examples:
-                  stopped: { "status": "ok" }
-                  notplaying: { "status": "noop" }
+                example: { "status": "ok" }
+          440:
+            description: No next song
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
 
     /previous:
       post:
@@ -232,10 +262,17 @@ securedBy: token
                 properties:
                   status: Types.Status
                 example: { "status": "ok" }
-          405:
+          440:
             description: No song is playing, can't scrub
             body:
               application/json:
                 properties:
                   status: Types.Status
                 example: { "status": "noop" }
+          441:
+            description: Can't scrub to required point, song is not that long
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
