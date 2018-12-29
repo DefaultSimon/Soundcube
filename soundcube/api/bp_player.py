@@ -9,6 +9,7 @@ from quart import Blueprint, request, abort
 from soundcube.api.web_utilities import with_status, get_json_from_request
 
 from ..core.player import Player
+from ..core.exceptions import MediaNotLoaded
 from ._types import StatusType
 
 app = Blueprint("player", __name__)
@@ -66,11 +67,31 @@ async def player_resume():
     Resume the current song
     """
     # no json expected
-    did_resume = await player.resume()
+    try:
+        did_resume = await player.resume()
+    except MediaNotLoaded:
+        return with_status(None, 441, StatusType.ERROR)
+    else:
+        if did_resume:
+            return with_status(None, 200, StatusType.OK)
+        else:
+            return with_status(None, 440, StatusType.NOOP)
 
-    if did_resume:
+
+@app.route("/stop", methods=["POST"])
+async def player_stop():
+    """
+    Full route: /music/player/resume
+
+    Request (JSON): None
+
+    Stop (unload) the current song
+    """
+    # no json expected
+
+    was_playing = await player.stop()
+
+    if was_playing:
         return with_status(None, 200, StatusType.OK)
     else:
         return with_status(None, 440, StatusType.NOOP)
-
-
