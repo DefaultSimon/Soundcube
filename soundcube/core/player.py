@@ -5,7 +5,7 @@ import asyncio
 import time
 
 from .youtube import YoutubeAudio
-from .exceptions import PlayerException, SoundcubeException, QueueException, YoutubeException
+from .exceptions import PlayerException, SoundcubeException, QueueException, YoutubeException, OutsideTimeBounds
 from .utilities import resolve_time, clamp
 from .queue import PlayerQueue
 
@@ -175,14 +175,27 @@ class Player:
 
     async def set_time(self, time_: float):
         """
+        Sets the time for the current song.
 
-        :param time_:
-        :return:
+        :param time_: time to set in seconds
+        :return: bool indicating if the time was changed
+
+        :raise: OutsideTimeBounds: requested time is outside the audio bounds
         """
         if type(time_) not in [int, float]:
             raise RuntimeError(f"'time': expected float, got {type(time)}")
 
+        if not self.player.get_media():
+            return False
+
+        # Find the current song length
+        audio_length = self._queue.current_audio.length
+
+        if time_ > audio_length:
+            raise OutsideTimeBounds("invalid time")
+
         self.player.set_time(int(time_ * 1000))
+        return True
 
     ###################
     # VOLUME FUNCTIONS

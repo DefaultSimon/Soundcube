@@ -12,7 +12,8 @@ from .web_utilities import with_status, get_json_from_request, process_time
 from ._bp_types import StatusType
 
 from ..core.player import Player
-from ..core.exceptions import MediaNotLoaded, QueueException, PlayerException, YoutubeException
+from ..core.exceptions import MediaNotLoaded, QueueException, PlayerException, \
+                              YoutubeException, OutsideTimeBounds
 
 app = Blueprint("player", __name__)
 player = Player()
@@ -197,8 +198,13 @@ async def player_set_time():
 
     try:
         log.debug(f"Parsed time: {time_in_float}")
-        await player.set_time(time_in_float)
+        did_change = await player.set_time(time_in_float)
     except RuntimeError:
         return with_status(None, 444, StatusType.INTERNAL_ERROR)
+    except OutsideTimeBounds:
+        return with_status(None, 441, StatusType.ERROR)
     else:
-        return with_status(None, 200, StatusType.OK)
+        if did_change:
+            return with_status(None, 200, StatusType.OK)
+        else:
+            return with_status(None, 440, StatusType.NOOP)

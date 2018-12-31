@@ -23,6 +23,13 @@ class MediaNotLoaded(PlayerException):
     pass
 
 
+class OutsideTimeBounds(PlayerException):
+    """
+    Raised when the user tries setting the time to one outside the length of the current song.
+    """
+    pass
+
+
 # MEDIA EXCEPTIONS
 class MediaException(SoundcubeException):
     """
