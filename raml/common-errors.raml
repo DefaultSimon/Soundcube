@@ -1,0 +1,12 @@
+#%RAML 1.0 Trait
+uses:
+  Types: types.raml
+
+responses:
+  444:
+    description: Internal error occured
+    body:
+      application/json:
+        properties:
+          status: Types.Status
+        example: { "status": "internal_error" }

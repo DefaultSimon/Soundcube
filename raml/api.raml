@@ -12,6 +12,9 @@ securitySchemes:
 
 securedBy: token
 
+traits:
+  commonErrors: !include common-errors.raml
+
 /ping:
   get:
     securedBy: null
@@ -28,6 +31,7 @@ securedBy: token
 /auth:
   /login:
     post:
+      is: [commonErrors]
       securedBy: null
       description: Provide the global (admin) password for Soundcube and receive a unique token for further requests
       body:
@@ -72,6 +76,7 @@ securedBy: token
 
   /logout:
     post:
+      is: [commonErrors]
       description: Invalidates your token
       responses:
         200:
@@ -85,6 +90,7 @@ securedBy: token
   /queue:
     /get:
       get:
+        is: [commonErrors]
         responses:
           200:
             description: Get the current queue
@@ -96,19 +102,23 @@ securedBy: token
 
     /add:
       post:
+        is: [commonErrors]
         description: Add a song to the queue
         body:
           application/json:
             type: object
             properties:
               song: string
+              position: integer
             example: |
               {
-                "song": "song_id"
+                "song": "song_id",
+                "position": 0
               }
 
     /remove:
       delete:
+        is: [commonErrors]
         description: Remove a song from the queue
         body:
           application/json:
@@ -122,6 +132,7 @@ securedBy: token
 
     /move:
       patch:
+        is: [commonErrors]
         description: Move a song through the queue
         body:
           application/json:
@@ -138,6 +149,7 @@ securedBy: token
   /player:
     /queue:
       post:
+        is: [commonErrors]
         description: Queue a song
         body:
           application/json:
@@ -152,6 +164,7 @@ securedBy: token
 
     /play:
       post:
+        is: [commonErrors]
         description: Play the current song
         responses:
           200:
@@ -180,6 +193,7 @@ securedBy: token
 
     /pause:
       post:
+        is: [commonErrors]
         description: Pause the current song
         responses:
           200:
@@ -200,6 +214,7 @@ securedBy: token
 
     /resume:
       post:
+        is: [commonErrors]
         description: Resumes the current song
         responses:
           200:
@@ -226,6 +241,7 @@ securedBy: token
 
     /stop:
       post:
+        is: [commonErrors]
         description: Stop the current song
         responses:
           200:
@@ -245,6 +261,7 @@ securedBy: token
 
     /next:
       post:
+        is: [commonErrors]
         description: Skip to the next song in queue
         responses:
           200:
@@ -264,6 +281,7 @@ securedBy: token
 
     /previous:
       post:
+        is: [commonErrors]
         description: Play the previous song in queue
         responses:
           200:
@@ -283,6 +301,7 @@ securedBy: token
 
     /scrub:
       patch:
+        is: [commonErrors]
         description: Scrub the current song to a specified timestamp
         body:
           application/json:
