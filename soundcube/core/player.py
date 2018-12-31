@@ -64,23 +64,18 @@ class Player:
             self._queue.set_current_song(0)
 
         # Get current song from queue
-        song: YoutubeAudio = self._queue.current_song
+        audio: YoutubeAudio = self._queue.current_audio
 
-        if song is None:
+        if audio is None:
             raise QueueException("no song to play")
 
-        media_obj: vlc.Media = self.vlc.media_new(song.best_audio.url)
-        if media_obj is None:
-            raise PlayerException("Error while trying to create new Media object for VLC")
-
-        self.player.set_media(media_obj)
-        log.info("Updated Media on player")
+        self._update_media(audio)
         self.player.play()
 
         # Show info and return
-        log.info(f"Playing: {song.title} (length: {resolve_time(song.length)})")
+        self._show_play_info()
 
-        return song
+        return audio
 
     async def pause(self) -> bool:
         """
@@ -131,6 +126,46 @@ class Player:
 
         self.player.set_media(None)
         return was_playing
+
+    async def next(self) -> YoutubeAudio:
+        """
+        Play next song in queue
+        :return: YoutubeAudio object
+
+        :raise: QueueException: no next song
+        :raise: PlayerException: problem while trying to create a new Media instance
+        """
+        audio: YoutubeAudio = self._queue.next_audio
+        if not audio:
+            raise QueueException("no next song")
+
+        self._update_media(audio)
+        self.player.play()
+
+        # Show info and return
+        self._show_play_info()
+
+        return audio
+
+    async def previous(self) -> YoutubeAudio:
+        """
+        Play previous song in queue
+        :return: YoutubeAudio object
+
+        :raise: QueueException: no next song
+        :raise: PlayerException: problem while trying to create a new Media instance
+        """
+        audio: YoutubeAudio = self._queue.previous_audio
+        if not audio:
+            raise QueueException("no previous song")
+
+        self._update_media(audio)
+        self.player.play()
+
+        # Show info and return
+        self._show_play_info()
+
+        return audio
 
     ###################
     # VOLUME FUNCTIONS
@@ -200,3 +235,18 @@ class Player:
         self.set_volume(self._last_volume)
         self._is_muted = False
         return True
+
+    ###################
+    # INTERNAL FUNCTIONS
+    ###################
+    def _update_media(self, audio: YoutubeAudio):
+        media_obj: vlc.Media = self.vlc.media_new(audio.best_audio.url)
+        if media_obj is None:
+            raise PlayerException("Error while creating vlc Media object")
+
+        self.player.set_media(media_obj)
+        log.info("Updated Media on player")
+
+    def _show_play_info(self):
+        audio = self._queue.current_audio
+        log.info(f"Playing: {audio.title} (length: {resolve_time(audio.length)})")

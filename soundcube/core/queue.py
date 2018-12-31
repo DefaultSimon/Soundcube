@@ -36,7 +36,7 @@ class PlayerQueue:
         log.debug(f"New state of the queue: {self.queue}")
 
     @property
-    def current_song(self):
+    def current_audio(self):
         """
         :return: the current song
         """
@@ -49,7 +49,7 @@ class PlayerQueue:
             raise QueueException("no current song")
 
     @property
-    def next_song(self):
+    def next_audio(self):
         """
         Updates the current index with the next song.
         :return: the new song
@@ -60,7 +60,21 @@ class PlayerQueue:
             return None
 
         self._current += 1
-        return self.current_song
+        return self.current_audio
+
+    @property
+    def previous_audio(self):
+        """
+        Updates the current index with the previous song.
+        :return: the new song
+        """
+        # Check if there is a next song
+        if (self._current - 1) < 0:
+            # There is no previous song
+            return None
+
+        self._current -= 1
+        return self.current_audio
 
     def set_current_song(self, index: int):
         """

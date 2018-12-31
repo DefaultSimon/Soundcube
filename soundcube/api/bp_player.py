@@ -25,7 +25,7 @@ async def player_queue():
         song: string
         type: Types.PlayType
 
-    Queue a song to play (at the end of the queue or next)
+    Queue a song to play (at the end of the queue or next).
     """
     json = await get_json_from_request(request)
 
@@ -45,7 +45,7 @@ async def player_play():
 
     Request (JSON): None
 
-    Play the current song
+    Play the current song.
     """
     # no json expected
 
@@ -66,7 +66,7 @@ async def player_pause():
 
     Request (JSON): None
 
-    Pause the current song
+    Pause the current song.
     """
     # no json expected
     did_pause = await player.pause()
@@ -84,7 +84,7 @@ async def player_resume():
 
     Request (JSON): None
 
-    Resume the current song
+    Resume the current song.
     """
     # no json expected
     try:
@@ -105,7 +105,7 @@ async def player_stop():
 
     Request (JSON): None
 
-    Stop (unload) the current song
+    Stop (unload) the current song.
     """
     # no json expected
 
@@ -115,3 +115,45 @@ async def player_stop():
         return with_status(None, 200, StatusType.OK)
     else:
         return with_status(None, 440, StatusType.NOOP)
+
+
+@app.route("/next", methods=["POST"])
+async def player_next():
+    """
+    Full route: /music/player/next
+
+    Request (JSON): None
+
+    Play the next song in queue.
+    """
+    # no json expected
+
+    try:
+        await player.next()
+    except QueueException:
+        return with_status(None, 441, StatusType.ERROR)
+    except PlayerException:
+        return with_status(None, 444, StatusType.INTERNAL_ERROR)
+    else:
+        return with_status(None, 200, StatusType.OK)
+
+
+@app.route("/previous", methods=["POST"])
+async def player_previous():
+    """
+    Full route: /music/player/previous
+
+    Request (JSON): None
+
+    Play the previous song in queue.
+    """
+    # no json expected
+
+    try:
+        await player.previous()
+    except QueueException:
+        return with_status(None, 441, StatusType.ERROR)
+    except PlayerException:
+        return with_status(None, 444, StatusType.INTERNAL_ERROR)
+    else:
+        return with_status(None, 200, StatusType.OK)
