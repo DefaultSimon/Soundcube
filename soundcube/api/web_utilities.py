@@ -3,7 +3,7 @@ from quart.wrappers.response import Response
 import logging
 from typing import Optional
 
-from ._types import StatusType
+from ._bp_types import StatusType
 
 log = logging.getLogger(__name__)
 

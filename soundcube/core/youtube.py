@@ -1,14 +1,24 @@
 # coding=utf-8
-import pafy
 import logging
+
+import pafy
+from pafy.backend_shared import BasePafy, BaseStream
+
 from ..config import DEV_KEY
+from .exceptions import NoAudioStream
+from .utilities import resolve_time
 
 log = logging.getLogger(__name__)
 
 pafy.set_api_key(DEV_KEY)
 
 
-def get_pafy(url: str):
+def get_pafy(url: str) -> BasePafy:
+    """
+    Parse the YouTube url with pafy.
+    :param url: YouTube url
+    :return: Pafy object
+    """
     log.debug(f"Creating new Pafy object for {url}")
     video = pafy.new(url, basic=True)
 
@@ -17,10 +27,34 @@ def get_pafy(url: str):
     return video
 
 
-def get_audio_url(url: str = None, pafy_: pafy.pafy.Pafy = None):
-    if url:
-        pf = get_pafy(url)
-    else:
-        pf = pafy_
+class YoutubeAudio:
+    """
+    Handles parsing YouTube url via pafy, finds audio streams, ...
 
-    return pf.getbestaudio(ftypestrict=False).url
+    Mostly for use as queue objects.
+    """
+    __slots__ = ("pafy", "best_audio",
+                 "title", "length", "videoid")
+
+    def __init__(self, url: str):
+        self.pafy: BasePafy = get_pafy(url)
+
+        # Make sure streams are available
+        if not self.pafy._have_basic:
+            self.pafy._fetch_basic()
+
+        # Find best audio stream
+        audio: BaseStream = self.pafy.getbestaudio(ftypestrict=False)
+
+        if audio is None:
+            raise NoAudioStream(f"no audio streams in {self.pafy.videoid}")
+
+        self.best_audio = audio
+
+        # Commonly used atributes
+        self.title = self.pafy.title
+        self.length = self.pafy.length
+        self.videoid = self.pafy.videoid
+
+    def __repr__(self):
+        return f"<YoutubeAudio '{self.videoid}',{resolve_time(self.length)}>"

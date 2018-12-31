@@ -9,23 +9,23 @@ from quart import Blueprint, request, abort
 from soundcube.api.web_utilities import with_status, get_json_from_request
 
 from ..core.player import Player
-from ..core.exceptions import MediaNotLoaded
-from ._types import StatusType
+from ..core.exceptions import MediaNotLoaded, QueueException, PlayerException
+from ._bp_types import StatusType
 
 app = Blueprint("player", __name__)
 player = Player()
 
 
-@app.route("/play", methods=["POST"])
-async def player_play():
+@app.route("/quickQueue", methods=["POST"])
+async def player_queue():
     """
-    Full route: /music/player/play/
+    Full route: /music/player/quickQueue
 
     Request (JSON):
         song: string
         type: Types.PlayType
 
-    Add a song to play (immediately or after the current song)
+    Queue a song to play (at the end of the queue or next)
     """
     json = await get_json_from_request(request)
 
@@ -33,9 +33,30 @@ async def player_play():
     if not url:
         return abort(400)
 
-    await player.play(url)
+    await player.queue(url)
 
     return with_status(None, 200, StatusType.OK)
+
+
+@app.route("/play", methods=["POST"])
+async def player_play():
+    """
+    Full route: /music/player/queue
+
+    Request (JSON): None
+
+    Play the current song
+    """
+    # no json expected
+
+    try:
+        await player.play()
+    except QueueException:
+        return with_status(None, 441, StatusType.ERROR)
+    except PlayerException:
+        return with_status(None, 444, StatusType.INTERNAL_ERROR)
+    else:
+        return with_status(None, 200, StatusType.OK)
 
 
 @app.route("/pause", methods=["POST"])
@@ -46,7 +67,6 @@ async def player_pause():
     Request (JSON): None
 
     Pause the current song
-    :return:
     """
     # no json expected
     did_pause = await player.pause()

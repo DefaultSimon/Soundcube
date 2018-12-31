@@ -5,6 +5,18 @@
 from typing import Union
 
 
+class Singleton(type):
+    """
+    Only allows one instantiation. On subsequent __init__ calls, returns the first instance
+    """
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
 def clamp(value: Union[int, float], min_: Union[int, float], max_: Union[int, float]) -> Union[int, float]:
     """
     Clamps the value between minimum and maximum values.
@@ -23,10 +35,11 @@ def clamp(value: Union[int, float], min_: Union[int, float], max_: Union[int, fl
         return max_
 
 
-def resolve_time(delta: int) -> str:
+def resolve_time(delta: int, sep: str = "") -> str:
     """
     Converts an int to its human-friendly representation
     :param delta: time in seconds
+    :param sep: string separator
     :return: string
     """
     if type(delta) is not int:
@@ -58,14 +71,14 @@ def resolve_time(delta: int) -> str:
     # Form calculations into a string
     fields = []
     if years:
-        fields.append("{} {}".format(years, "y"))
+        fields.append(f"{years}y")
     if days:
-        fields.append("{} {}".format(days, "d"))
+        fields.append(f"{days}d")
     if hours:
-        fields.append("{} {}".format(hours, "h"))
+        fields.append(f"{hours}h")
     if minutes:
-        fields.append("{} {}".format(minutes, "m"))
-    fields.append("{} {}".format(delta, "s"))
+        fields.append(f"{minutes}m")
+    fields.append(f"{delta}s")
 
     # If tm is less than a minute, do not add "and".
-    return " ".join(fields)
+    return sep.join(fields)
