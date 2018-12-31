@@ -136,9 +136,9 @@ securedBy: token
               }
 
   /player:
-    /play:
+    /queue:
       post:
-        description: Add a song to play (immediately or after the current song)
+        description: Queue a song
         body:
           application/json:
             properties:
@@ -147,8 +147,36 @@ securedBy: token
             example: |
               {
                 "song": "song_id",
-                "type": "immediately"
+                "type": "next"
               }
+
+    /play:
+      post:
+        description: Play the current song
+        responses:
+          200:
+            description: Song is now playing
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "ok" }
+
+          440:
+            description: Song was already playing
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "noop" }
+
+          441:
+            description: No song in queue / loaded
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
 
     /pause:
       post:
