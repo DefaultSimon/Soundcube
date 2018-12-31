@@ -9,6 +9,7 @@ class StatusType:
     NOOP = "noop"
     # Error, but non-planned
     INTERNAL_ERROR = "internal_error"
+    BAD_REQUEST = "bad_request"
 
 
 class PlayType:

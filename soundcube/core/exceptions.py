@@ -44,3 +44,11 @@ class QueueException(SoundcubeException):
     Raised for general queue-related problems
     """
     pass
+
+
+# USER EXCEPTIONS
+class YoutubeException(SoundcubeException):
+    """
+    Raised for YouTube-related problems (such as an invalid link)
+    """
+    pass

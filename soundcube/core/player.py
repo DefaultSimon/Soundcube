@@ -5,7 +5,7 @@ import asyncio
 import time
 
 from .youtube import YoutubeAudio
-from .exceptions import PlayerException, SoundcubeException, QueueException
+from .exceptions import PlayerException, SoundcubeException, QueueException, YoutubeException
 from .utilities import resolve_time, clamp
 from .queue import PlayerQueue
 
@@ -27,6 +27,9 @@ class Player:
         self._current_volume = self._last_volume = DEFAULT_VOLUME
         self._is_muted: bool = False
 
+    ###################
+    # PLAYING FUNCTIONS
+    ###################
     async def queue(self, url: str, play_type: PlayType = PlayType.QUEUE):
         """
         Put a new song in the player queue.
@@ -37,7 +40,10 @@ class Player:
         """
         t_init = time.time()
 
-        audio = YoutubeAudio(url)
+        try:
+            audio = YoutubeAudio(url)
+        except OSError:
+            raise YoutubeException("invalid link")
 
         log.debug(f"Got audio from '{audio.title}':{audio.best_audio}, parsing took {round(time.time() - t_init, 3)}")
 
@@ -167,6 +173,17 @@ class Player:
 
         return audio
 
+    async def set_time(self, time_: float):
+        """
+
+        :param time_:
+        :return:
+        """
+        if type(time_) not in [int, float]:
+            raise RuntimeError(f"'time': expected float, got {type(time)}")
+
+        self.player.set_time(int(time_ * 1000))
+
     ###################
     # VOLUME FUNCTIONS
     ###################
@@ -190,7 +207,7 @@ class Player:
 
         self.player.audio_set_volume(amount)
 
-    async def volume_increase(self, amount: int = VOLUME_STEP) -> int:
+    def volume_increase(self, amount: int = VOLUME_STEP) -> int:
         """
         Shorthand function for setting a louder volume.
         :param amount: int between 0 and 100
@@ -201,7 +218,7 @@ class Player:
         self.set_volume(new_volume)
         return new_volume
 
-    async def volume_decrease(self, amount: int = VOLUME_STEP) -> int:
+    def volume_decrease(self, amount: int = VOLUME_STEP) -> int:
         """
         Shorthand function for setting a quieter volume.
         :param amount: int between 0 and 100
@@ -212,7 +229,7 @@ class Player:
         self.set_volume(new_volume)
         return new_volume
 
-    async def mute(self) -> bool:
+    def mute(self) -> bool:
         """
         Mute the sound output (set volume to 0) and remember the previous volume.
         :return: bool indicating if the mute was done
@@ -224,7 +241,7 @@ class Player:
         self._is_muted = True
         return True
 
-    async def unmute(self) -> bool:
+    def unmute(self) -> bool:
         """
         Unmute the sound output (set volume to previous one).
         :return: bool indicating if the unmute was done
