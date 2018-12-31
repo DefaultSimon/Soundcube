@@ -7,8 +7,10 @@ class StatusType:
     FORBIDDEN = "forbidden"
     # No operation
     NOOP = "noop"
+    # Error, but non-planned
+    INTERNAL_ERROR = "internal_error"
 
 
 class PlayType:
     NEXT = "next"
-    IMMEDIATELY = "immediately"
+    QUEUE = "queue"
