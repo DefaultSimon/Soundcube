@@ -161,6 +161,14 @@ traits:
                 "song": "song_id",
                 "type": "next"
               }
+        responses:
+          400:
+            description: YouTube video ID is invalid
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
 
     /play:
       post:
@@ -299,7 +307,7 @@ traits:
                   status: Types.Status
                 example: { "status": "error" }
 
-    /scrub:
+    /setTime:
       patch:
         is: [commonErrors]
         description: Scrub the current song to a specified timestamp

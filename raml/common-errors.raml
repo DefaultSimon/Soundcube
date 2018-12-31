@@ -9,4 +9,26 @@ responses:
       application/json:
         properties:
           status: Types.Status
-        example: { "status": "internal_error" }
+          message:
+            required: false
+            type: string
+
+        example: |
+          {
+            "status": "internal_error",
+            "message": "PlayerException: ..."
+          }
+  400:
+    description: Bad request (malformed data or missing fields)
+    body:
+      application/json:
+        properties:
+          status: Types.Status
+          message:
+            required: false
+            type: string
+        example: |
+          {
+            "status": "bad_request",
+            "message": "Missing 'sample' field"
+          }

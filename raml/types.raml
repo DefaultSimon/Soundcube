@@ -21,3 +21,8 @@ types:
       - error
       - noop
       - internal_error
+      - bad_request
+
+  AudioPosition:
+    type: string
+    pattern: ([0-9]+:?){1,3}(\.[0-9]+)?
