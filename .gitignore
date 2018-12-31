@@ -9,5 +9,9 @@ __pycache__/
 
 # Ignore .ini, but not examples
 *.ini
-!*.example
 !*_defaults.ini
+
+*.toml
+!*_defaults.toml
+
+!*.example
