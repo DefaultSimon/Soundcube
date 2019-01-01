@@ -15,3 +15,4 @@ class StatusType:
 class PlayType:
     NEXT = "next"
     QUEUE = "queue"
+    AT_POSITION = "at_position"

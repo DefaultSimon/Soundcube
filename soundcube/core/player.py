@@ -6,7 +6,7 @@ import time
 
 from .youtube import YoutubeAudio
 from .exceptions import PlayerException, SoundcubeException, QueueException, YoutubeException, OutsideTimeBounds
-from .utilities import resolve_time, clamp
+from .utilities import resolve_time, clamp, Singleton
 from .queue import PlayerQueue
 
 from ..config import DEFAULT_VOLUME, VOLUME_STEP
@@ -15,7 +15,7 @@ from ..api._bp_types import PlayType
 log = logging.getLogger(__name__)
 
 
-class Player:
+class Player(metaclass=Singleton):
     def __init__(self, loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()):
         self.vlc: vlc.Instance = vlc.Instance()
         self.player: vlc.MediaPlayer = self.vlc.media_player_new()
@@ -30,7 +30,7 @@ class Player:
     ###################
     # PLAYING FUNCTIONS
     ###################
-    async def queue(self, url: str, play_type: PlayType = PlayType.QUEUE):
+    async def queue(self, url: str, play_type: PlayType = PlayType.QUEUE, position: int = None):
         """
         Put a new song in the player queue.
         :param url: Youtube url to queue
@@ -54,6 +54,11 @@ class Player:
         elif play_type == PlayType.NEXT:
             next_index = self._queue._current + 1
             self._queue.insert_into_queue(audio, next_index)
+        elif play_type == PlayType.AT_POSITION:
+            if position is None:
+                raise RuntimeError("missing arguments")
+
+            self._queue.insert_into_queue(audio, position)
         else:
             raise SoundcubeException(f"invalid PlayType: '{play_type}'")
 

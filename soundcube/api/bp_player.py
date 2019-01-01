@@ -40,7 +40,7 @@ async def player_queue():
 
     url = json.get("song")
     if not url:
-        return abort(400)
+        return with_status({"message": "Missing 'song' field"}, 400, StatusType.BAD_REQUEST)
 
     try:
         await player.queue(url)

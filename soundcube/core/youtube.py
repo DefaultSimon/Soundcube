@@ -51,10 +51,12 @@ class YoutubeAudio:
 
         self.best_audio = audio
 
-        # Commonly used atributes
+        # Commonly used attributes
         self.title = self.pafy.title
         self.length = self.pafy.length
         self.videoid = self.pafy.videoid
+
+        # TODO fetch gdata in the background
 
     def __repr__(self):
         return f"<YoutubeAudio '{self.videoid}',{resolve_time(self.length)}>"
