@@ -115,6 +115,35 @@ traits:
                 "song": "song_id",
                 "position": 0
               }
+        responses:
+          200:
+            body:
+              application/json:
+                properties:
+                  new_queue: array
+                  status: Types.Status
+                example: |
+                  {
+                    "new_queue": [
+                      {
+                        "video_id": "bS1yWpVlRlc",
+                        "title": "Asimov | 65daysofstatic (No Man’s Sky)",
+                        "length": 351,
+                        "username": "TheInspirationalMind",
+                        "published": "2016-08-05 01:07:09",
+                        "viewcount": 116242
+                      },
+                      {
+                        "video_id": "YTpBVMHKjc4",
+                        "title": "65daysofstatic - Debutante (No Man's Sky)",
+                        "length": 442,
+                        "username": "EpicVideoGameMusic1",
+                        "published": "2014-01-23 19:51:13",
+                        "viewcount": 335469
+                      }
+                    ],
+                    "status": "ok"
+                  }
 
     /remove:
       delete:
