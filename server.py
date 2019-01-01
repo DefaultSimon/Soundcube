@@ -27,6 +27,8 @@ async def handle_headers(response):
     # This header is necessary for clients to be able to receive data from this server
     # see https://stackoverflow.com/questions/10636611/how-does-access-control-allow-origin-header-work
     response.headers["Access-Control-Allow-Origin"] = "*"
+    # see https://stackoverflow.com/questions/32500073/request-header-field-access-control-allow-headers-is-not-allowed-by-itself-in-pr
+    response.headers["Access-Control-Allow-Headers"] = "content-type"
     return response
 
 # Run with `run.bat` (or `hypercorn server:app`)
