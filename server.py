@@ -20,4 +20,13 @@ app.register_blueprint(bp_ping)
 app.register_blueprint(bp_queue, url_prefix="/music/queue")
 app.register_blueprint(bp_player, url_prefix="/music/player")
 
+
+# Register a handler to append Access-Control-Allow-Origin headers
+@app.after_request
+async def handle_headers(response):
+    # This header is necessary for clients to be able to receive data from this server
+    # see https://stackoverflow.com/questions/10636611/how-does-access-control-allow-origin-header-work
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
+
 # Run with `run.bat` (or `hypercorn server:app`)
