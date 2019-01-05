@@ -120,7 +120,7 @@ traits:
             body:
               application/json:
                 properties:
-                  new_queue: array
+                  new_queue: Types.Queue
                   status: Types.Status
                 example: |
                   {
@@ -144,6 +144,13 @@ traits:
                     ],
                     "status": "ok"
                   }
+          441:
+            description: Youtube video ID is invalid
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
 
     /remove:
       delete:
@@ -151,13 +158,41 @@ traits:
         description: Remove a song from the queue
         body:
           application/json:
-            type: object
             properties:
-              song: string
+              position: integer
             example: |
               {
-                "song": "song_id"
+                "position": 0
               }
+        responses:
+          200:
+            description: Song removed from the queue
+            body:
+              application/json:
+                properties:
+                  new_queue: Types.Queue
+                  status: Types.Status
+                example: |
+                  {
+                    "new_queue": [
+                      {
+                        "video_id": "jLRw-Ahq22k",
+                        "title": "Snarky Puppy, Metropole Orkest - The Curtain",
+                        "length": 885,
+                        "username": "Snarky Puppy",
+                        "published": "2015-04-06 14:05:11",
+                        "viewcount": 2085988
+                      }
+                    ],
+                    "status": "ok"
+                  }
+          441:
+            description: Couldn't remove the song, no such index
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
 
     /move:
       patch:
@@ -167,13 +202,38 @@ traits:
           application/json:
             type: object
             properties:
-              song: string
-              new_index: integer
+              current_index: integer
+              new_index:
+                type: integer
+                description: After which song (index) to insert the song at current_index
             example: |
               {
-                "song": "song_id",
+                "current_index": 2,
                 "new_index": 5
               }
+        responses:
+          200:
+            description: Song has been moved
+            body:
+              application/json:
+                properties:
+                  new_queue: Types.Queue
+                  status: Types.Status
+                example: |
+                  {
+                    "new_queue": [
+                      {
+                        "video_id": "jLRw-Ahq22k",
+                        "title": "Snarky Puppy, Metropole Orkest - The Curtain",
+                        "length": 885,
+                        "username": "Snarky Puppy",
+                        "published": "2015-04-06 14:05:11",
+                        "viewcount": 2085988
+                      }
+                    ],
+                    "status": "ok"
+                  }
+
 
   /player:
     /quickQueue:

@@ -27,3 +27,21 @@ types:
   AudioPosition:
     type: string
     pattern: ([0-9]+:?){1,3}(\.[0-9]+)?
+
+  YoutubeID:
+    type: string
+    description: A valid Youtube Video ID
+
+  AudioInfo:
+    type: object
+    properties:
+      video_id: string
+      title: string
+      length: integer
+      username: string
+      published: string
+      viewcount: integer
+
+  Queue:
+    type: array
+    items: AudioInfo
