@@ -13,7 +13,7 @@ from ._bp_types import StatusType, PlayType
 
 from ..core.player import Player
 from ..core.youtube import YoutubeAudio
-from ..core.exceptions import YoutubeException
+from ..core.exceptions import YoutubeException, QueueException
 
 log = logging.getLogger(__name__)
 app = Blueprint("queue", __name__)
@@ -32,7 +32,7 @@ def dictify_YoutubeAudio(obj: YoutubeAudio) -> dict:
     }
 
 
-def get_friendly_queue() -> list:
+def get_json_queue() -> list:
     """
     Returns a JSON-friendly representation of the queue
     :return: list
@@ -47,12 +47,12 @@ async def queue_get():
     """
     Full route: /music/queue/get
 
-    Returns the current queue
+    :return: the current queue
     """
     # no json expected
 
     payload = {
-        "queue": get_friendly_queue()
+        "queue": get_json_queue()
     }
 
     return with_status(payload, 200, StatusType.OK)
@@ -68,11 +68,12 @@ async def queue_add():
         position: int
 
     Adds a song to the queue.
+    :return: The new queue
     """
     json = await get_json_from_request(request)
 
     song, position = json.get("song"), json.get("position")
-    if not song or not position:
+    if song is None or position is None:
         return with_status({"message": "Missing fields"}, 400, StatusType.BAD_REQUEST)
     try:
         position = int(position)
@@ -80,12 +81,81 @@ async def queue_add():
         return with_status({"message": "Invalid 'position'"}, 400, StatusType.BAD_REQUEST)
 
     try:
-        await player.queue(song, PlayType.AT_POSITION, position)
+        await player.player_queue(song, PlayType.AT_POSITION, position)
     except YoutubeException:
-        return with_status(None, 400, StatusType.ERROR)
+        return with_status(None, 441, StatusType.ERROR)
     else:
-        payload = {
-            "new_queue": get_friendly_queue()
+        data = {
+            "new_queue": get_json_queue()
         }
 
-        return with_status(payload, 200, StatusType.OK)
+        return with_status(data, 200, StatusType.OK)
+
+
+@app.route("/remove", methods=["POST"])
+async def queue_remove():
+    """
+    Full route: /music/queue/remove
+
+    Request (JSON):
+        position: int
+
+    Remove a song from the queue
+    :return: the new queue
+    """
+    json = await get_json_from_request(request)
+
+    position = json.get("position")
+    if position is None:
+        return with_status({"message": "Missing 'position' field"}, 400, StatusType.BAD_REQUEST)
+    if type(position) is not int:
+        return with_status({"message": "'position' field should be an integer"}, 400, StatusType.BAD_REQUEST)
+
+    try:
+        await player.queue_remove(position)
+    except QueueException:
+        return with_status(None, 441, StatusType.ERROR)
+    else:
+        data = {
+            "new_queue": get_json_queue()
+        }
+
+        return with_status(data, 200, StatusType.OK)
+
+
+@app.route("/move", methods=["POST"])
+async def queue_move():
+    """
+    Full route: /music/queue/move
+
+    Request (JSON):
+        current_index: int
+        new_index: int
+
+    Move a song to a position in the queue
+    :return: the new queue
+    """
+    json = await get_json_from_request(request)
+
+    current, new = json.get("current_index"), json.get("new_index")
+    # Can't do 'not current' because that includes 0
+    if current is None or new is None:
+        return with_status({"message": "One or more fields missing: 'current', 'new'"}, 400, StatusType.BAD_REQUEST)
+
+    if type(current) is not int:
+        return with_status({"message": "'current_index' field should be an integer"}, 400, StatusType.BAD_REQUEST)
+    if type(new) is not int:
+        return with_status({"message": "'new_index' field should be an integer"}, 400, StatusType.BAD_REQUEST)
+
+    try:
+        # Explanation of 'new + 1':
+        # This makes sure that the song is inserted AFTER new_index
+        await player.queue_move(current, new + 1)
+    except QueueException:
+        return with_status(None, 441, StatusType.ERROR)
+    else:
+        data = {
+            "new_queue": get_json_queue()
+        }
+
+        return with_status(data, 200, StatusType.OK)

@@ -20,7 +20,7 @@ class Player(metaclass=Singleton):
         self.vlc: vlc.Instance = vlc.Instance()
         self.player: vlc.MediaPlayer = self.vlc.media_player_new()
 
-        self._queue = PlayerQueue()
+        self._queue: PlayerQueue = PlayerQueue()
 
         self.loop: asyncio.AbstractEventLoop = loop
 
@@ -28,9 +28,10 @@ class Player(metaclass=Singleton):
         self._is_muted: bool = False
 
     ###################
-    # PLAYING FUNCTIONS
+    # PLAYER FUNCTIONS
+    # Note: queue is both a Player and Queue function
     ###################
-    async def queue(self, url: str, play_type: PlayType = PlayType.QUEUE, position: int = None):
+    async def player_queue(self, url: str, play_type: PlayType = PlayType.QUEUE, position: int = None):
         """
         Put a new song in the player queue.
         :param url: Youtube url to queue
@@ -49,7 +50,7 @@ class Player(metaclass=Singleton):
 
         # Puts the song at the end of queue
         if play_type == PlayType.QUEUE:
-            self._queue.add_to_queue(audio)
+            self._queue.append_to_queue(audio)
         # Always puts the song after the current one
         elif play_type == PlayType.NEXT:
             next_index = self._queue._current + 1
@@ -62,7 +63,7 @@ class Player(metaclass=Singleton):
         else:
             raise SoundcubeException(f"invalid PlayType: '{play_type}'")
 
-    async def play(self) -> YoutubeAudio:
+    async def player_play(self) -> YoutubeAudio:
         """
         Plays the current song in queue.
         :return: YoutubeAudio object
@@ -88,7 +89,7 @@ class Player(metaclass=Singleton):
 
         return audio
 
-    async def pause(self) -> bool:
+    async def player_pause(self) -> bool:
         """
         Pauses the current song (if one is playing).
 
@@ -102,7 +103,7 @@ class Player(metaclass=Singleton):
         log.info("Song paused")
         return True
 
-    async def resume(self) -> bool:
+    async def player_resume(self) -> bool:
         """
         Resume the current song (and load one if not already via play()).
 
@@ -116,14 +117,14 @@ class Player(metaclass=Singleton):
 
         # If no tracks are loaded, try loading the current song first
         if not self.player.get_media():
-            await self.play()
+            await self.player_play()
         else:
             self.player.play()
             log.info("Song resumed")
 
         return True
 
-    async def stop(self) -> bool:
+    async def player_stop(self) -> bool:
         """
         Stops the current song (if one is playing).
 
@@ -133,12 +134,12 @@ class Player(metaclass=Singleton):
         if not self.player.get_media():
             return False
 
-        was_playing = await self.pause()
+        was_playing = await self.player_pause()
 
         self.player.set_media(None)
         return was_playing
 
-    async def next(self) -> YoutubeAudio:
+    async def player_next(self) -> YoutubeAudio:
         """
         Play next song in queue
         :return: YoutubeAudio object
@@ -158,7 +159,7 @@ class Player(metaclass=Singleton):
 
         return audio
 
-    async def previous(self) -> YoutubeAudio:
+    async def player_previous(self) -> YoutubeAudio:
         """
         Play previous song in queue
         :return: YoutubeAudio object
@@ -178,7 +179,7 @@ class Player(metaclass=Singleton):
 
         return audio
 
-    async def set_time(self, time_: float):
+    async def player_set_time(self, time_: float):
         """
         Sets the time for the current song.
 
@@ -201,6 +202,33 @@ class Player(metaclass=Singleton):
 
         self.player.set_time(int(time_ * 1000))
         return True
+
+    ###################
+    # QUEUE FUNCTIONS
+    ###################
+    async def queue_remove(self, position: int):
+        """
+        Remove a song from the queue
+        :param position: song's index in the queue
+
+        :raise: QueueException: no song at this position
+        """
+        self._queue.remove_from_queue(position)
+
+    async def queue_move(self, current_position: int, new_index: int):
+        """
+        Move a song in the queue
+        :param current_position: song's current index in the queue
+        :param new_index: which index to move the song to
+
+        :raise: QueueException: no song at this position
+        """
+        # This will raise a QueueException if the index doesn't exist,
+        # so there is no need for backtracking if something goes haywire later because it shouldn't
+        audio = self._queue.get_song_at(current_position)
+
+        self._queue.insert_into_queue(audio, new_index)
+        self._queue.remove_from_queue(current_position)
 
     ###################
     # VOLUME FUNCTIONS

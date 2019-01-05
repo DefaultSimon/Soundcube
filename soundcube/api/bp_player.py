@@ -43,7 +43,7 @@ async def player_queue():
         return with_status({"message": "Missing 'song' field"}, 400, StatusType.BAD_REQUEST)
 
     try:
-        await player.queue(url)
+        await player.player_queue(url)
     except YoutubeException:
         return with_status(None, 400, StatusType.ERROR)
     else:
@@ -62,7 +62,7 @@ async def player_play():
     # no json expected
 
     try:
-        await player.play()
+        await player.player_play()
     except QueueException:
         return with_status(None, 441, StatusType.ERROR)
     except PlayerException:
@@ -81,7 +81,7 @@ async def player_pause():
     Pause the current song.
     """
     # no json expected
-    did_pause = await player.pause()
+    did_pause = await player.player_pause()
 
     if did_pause:
         return with_status(None, 200, StatusType.OK)
@@ -100,7 +100,7 @@ async def player_resume():
     """
     # no json expected
     try:
-        did_resume = await player.resume()
+        did_resume = await player.player_resume()
     except MediaNotLoaded:
         return with_status(None, 441, StatusType.ERROR)
     else:
@@ -121,7 +121,7 @@ async def player_stop():
     """
     # no json expected
 
-    was_playing = await player.stop()
+    was_playing = await player.player_stop()
 
     if was_playing:
         return with_status(None, 200, StatusType.OK)
@@ -141,7 +141,7 @@ async def player_next():
     # no json expected
 
     try:
-        await player.next()
+        await player.player_next()
     except QueueException:
         return with_status(None, 441, StatusType.ERROR)
     except PlayerException:
@@ -162,7 +162,7 @@ async def player_previous():
     # no json expected
 
     try:
-        await player.previous()
+        await player.player_previous()
     except QueueException:
         return with_status(None, 441, StatusType.ERROR)
     except PlayerException:
@@ -198,7 +198,7 @@ async def player_set_time():
 
     try:
         log.debug(f"Parsed time: {time_in_float}")
-        did_change = await player.set_time(time_in_float)
+        did_change = await player.player_set_time(time_in_float)
     except RuntimeError:
         return with_status(None, 444, StatusType.INTERNAL_ERROR)
     except OutsideTimeBounds:
