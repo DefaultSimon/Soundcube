@@ -2,6 +2,9 @@
 import logging
 from quart import Quart
 
+from soundcube.api.web_utilities import with_status
+from soundcube.api._bp_types import StatusType
+
 log = logging.getLogger(__name__)
 app = Quart(__name__)
 
@@ -20,6 +23,16 @@ app.register_blueprint(bp_ping)
 app.register_blueprint(bp_queue, url_prefix="/music/queue")
 app.register_blueprint(bp_player, url_prefix="/music/player")
 
+
+# Global error handlers
+@app.errorhandler(500)
+async def error_500(_):
+    data = {
+        "message": "An uncaught internal error occurred, please try again later.",
+        "unhandled": True
+    }
+
+    return with_status(data, 500, StatusType.INTERNAL_ERROR)
 
 # Register a handler to append Access-Control-Allow-Origin headers
 @app.after_request
