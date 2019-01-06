@@ -31,13 +31,15 @@ class Player(metaclass=Singleton):
 
     ###################
     # PLAYER FUNCTIONS
-    # Note: queue is both a Player and Queue function
+    # Note: player_queue is both a Player and Queue function
     ###################
-    async def player_queue(self, url: str, play_type: PlayType = PlayType.QUEUE, position: int = None):
+    async def player_queue(self, url: str, play_type: PlayType = PlayType.QUEUE, position: int = None, set_playing: bool = False):
         """
         Put a new song in the player queue.
         :param url: Youtube url to queue
         :param play_type: when to play this audio
+        :param position: when using PlayType.AT_POSITION, this is the position to place the song
+        :param set_playing: bool indicating if the new song should be loaded (but not yet played)
 
         :raise: SoundcubeException: play_type is invalid
         """
@@ -50,20 +52,42 @@ class Player(metaclass=Singleton):
 
         log.debug(f"Got audio from '{audio.title}':{audio.best_audio}, parsing took {round(time.time() - t_init, 3)}")
 
+        # All if clauses keep track of song_index for use later
         # Puts the song at the end of queue
         if play_type == PlayType.QUEUE:
-            self._queue.append_to_queue(audio)
+            song_index = self._queue.append_to_queue(audio)
         # Always puts the song after the current one
         elif play_type == PlayType.NEXT:
-            next_index = self._queue._current + 1
-            self._queue.insert_into_queue(audio, next_index)
+            song_index = self._queue._current + 1
+            self._queue.insert_into_queue(audio, song_index)
         elif play_type == PlayType.AT_POSITION:
             if position is None:
                 raise RuntimeError("missing arguments")
 
+            song_index = position
             self._queue.insert_into_queue(audio, position)
         else:
             raise SoundcubeException(f"invalid PlayType: '{play_type}'")
+
+        # Load the song if specified
+        if set_playing is True:
+            self._queue.set_current_song(song_index)
+            await self.player_load()
+
+    async def player_load(self) -> YoutubeAudio:
+        """
+        Loads the current song
+        :return: YoutubeAudio that was loaded
+        """
+        # If no song is set, start with the first one
+        if self._queue._current is None:
+            raise QueueException("no song is loaded")
+
+        # Get current song:
+        audio: YoutubeAudio = self._queue.current_audio
+
+        self._update_media(audio)
+        return audio
 
     async def player_play(self) -> YoutubeAudio:
         """
@@ -205,14 +229,14 @@ class Player(metaclass=Singleton):
         self.player.set_time(int(time_ * 1000))
         return True
 
-    async def player_is_playing(self) -> bool:
+    def player_is_playing(self) -> bool:
         """
         :return: a boolean indicating if a song is currently being played
         """
         if not self.player.get_media():
             return False
 
-        return self.player.is_playing()
+        return bool(self.player.is_playing())
 
     async def player_get_time(self) -> Union[None, float]:
         """

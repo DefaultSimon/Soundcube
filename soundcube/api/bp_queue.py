@@ -55,6 +55,7 @@ async def queue_add():
     Request (JSON):
         song: video_id
         position: int
+        set_playing: bool
 
     Adds a song to the queue.
     :return: The new queue
@@ -62,6 +63,7 @@ async def queue_add():
     json = await get_json_from_request(request)
 
     song, position = json.get("song"), json.get("position")
+    set_playing = bool(json.get("set_playing", False))
     if song is None or position is None:
         return with_status({"message": "Missing fields"}, 400, StatusType.BAD_REQUEST)
     try:
@@ -70,7 +72,7 @@ async def queue_add():
         return with_status({"message": "Invalid 'position'"}, 400, StatusType.BAD_REQUEST)
 
     try:
-        await player.player_queue(song, PlayType.AT_POSITION, position)
+        await player.player_queue(song, PlayType.AT_POSITION, position=position, set_playing=set_playing)
     except YoutubeException:
         return with_status(None, 441, StatusType.ERROR)
     else:

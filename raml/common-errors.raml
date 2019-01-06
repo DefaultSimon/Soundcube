@@ -32,3 +32,11 @@ responses:
             "status": "bad_request",
             "message": "Missing 'sample' field"
           }
+
+  403:
+    description: Token is invalid / missing
+    body:
+      application/json:
+        properties:
+          status: Types.Status
+        example: { "status": "forbidden" }

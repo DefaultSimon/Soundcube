@@ -14,15 +14,20 @@ class PlayerQueue:
         # Index of the music in queue that is currently playing
         self._current: int = None
 
-    def append_to_queue(self, audio: YoutubeAudio):
+    def append_to_queue(self, audio: YoutubeAudio) -> int:
         """
         Add a song to the end of the queue
         :param audio: YoutubeAudio object to queue
+
+        :return: the queued position
         """
         self.queue.append(audio)
 
         log.info(f"Added new song to queue: {audio.title}")
         log.debug(f"New state of the queue: {self.queue}")
+
+        # Return the position
+        return len(self.queue) - 1
 
     def insert_into_queue(self, audio: YoutubeAudio, position: int):
         """

@@ -117,10 +117,14 @@ traits:
             properties:
               song: string
               position: integer
+              set_playing:
+                type: boolean
+                required: false
             example: |
               {
                 "song": "song_id",
-                "position": 0
+                "position": 0,
+                "set_playing": false
               }
         responses:
           200:
