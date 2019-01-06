@@ -8,7 +8,7 @@ import logging
 from typing import List
 from quart import Blueprint, request
 
-from .web_utilities import with_status, get_json_from_request
+from .web_utilities import with_status, get_json_from_request, dictify_YoutubeAudio
 from ._bp_types import StatusType, PlayType
 
 from ..core.player import Player
@@ -18,18 +18,6 @@ from ..core.exceptions import YoutubeException, QueueException
 log = logging.getLogger(__name__)
 app = Blueprint("queue", __name__)
 player = Player()
-
-
-# noinspection PyPep8Naming
-def dictify_YoutubeAudio(obj: YoutubeAudio) -> dict:
-    return {
-        "video_id": obj.videoid,
-        "title": obj.title,
-        "length": obj.length,
-        "username": obj.pafy.username,
-        "published": obj.pafy.published,
-        "viewcount": obj.pafy.viewcount
-    }
 
 
 def get_json_queue() -> list:
@@ -52,7 +40,8 @@ async def queue_get():
     # no json expected
 
     payload = {
-        "queue": get_json_queue()
+        "queue": get_json_queue(),
+        "current_song": player._queue._current
     }
 
     return with_status(payload, 200, StatusType.OK)

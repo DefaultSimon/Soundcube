@@ -6,6 +6,8 @@ from typing import Optional, Union
 
 from ._bp_types import StatusType
 
+from ..core.youtube import YoutubeAudio
+
 log = logging.getLogger(__name__)
 
 try:
@@ -58,3 +60,15 @@ def process_time(time_: str) -> Union[int, float]:
         total += part
 
     return total
+
+
+# noinspection PyPep8Naming
+def dictify_YoutubeAudio(obj: YoutubeAudio) -> dict:
+    return {
+        "video_id": obj.videoid,
+        "title": obj.title,
+        "length": obj.length,
+        "username": obj.pafy.username,
+        "published": obj.pafy.published,
+        "viewcount": obj.pafy.viewcount
+    }

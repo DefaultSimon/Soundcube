@@ -4,6 +4,8 @@ import logging
 import asyncio
 import time
 
+from typing import Union
+
 from .youtube import YoutubeAudio
 from .exceptions import PlayerException, SoundcubeException, QueueException, YoutubeException, OutsideTimeBounds
 from .utilities import resolve_time, clamp, Singleton
@@ -202,6 +204,29 @@ class Player(metaclass=Singleton):
 
         self.player.set_time(int(time_ * 1000))
         return True
+
+    async def player_is_playing(self) -> bool:
+        """
+        :return: a boolean indicating if a song is currently being played
+        """
+        if not self.player.get_media():
+            return False
+
+        return self.player.is_playing()
+
+    async def player_get_time(self) -> Union[None, float]:
+        """
+        :return: None if no song is being played
+        :return: float representing seconds of time
+        """
+        time_ms = self.player.get_time()
+
+        # Returned by vlc module if there is no media
+        if time_ms == -1:
+            return None
+        else:
+            return time_ms / 1000
+
 
     ###################
     # QUEUE FUNCTIONS

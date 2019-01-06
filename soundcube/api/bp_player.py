@@ -6,9 +6,9 @@
 ########################
 import re
 import logging
-from quart import Blueprint, request, abort
+from quart import Blueprint, request
 
-from .web_utilities import with_status, get_json_from_request, process_time
+from .web_utilities import with_status, get_json_from_request, process_time, dictify_YoutubeAudio
 from ._bp_types import StatusType
 
 from ..core.player import Player
@@ -26,7 +26,7 @@ time_regex = re.compile(r"([0-9]+:?){1,3}(\.[0-9]+)?")
 
 
 @app.route("/quickQueue", methods=["POST"])
-async def player_queue():
+async def player_quick_queue():
     """
     Full route: /music/player/quickQueue
 
@@ -48,6 +48,31 @@ async def player_queue():
         return with_status(None, 400, StatusType.ERROR)
     else:
         return with_status(None, 200, StatusType.OK)
+
+
+@app.route("/getCurrentSong")
+async def player_get_current():
+    """
+    Full route: /music/player/getCurrentSong
+
+    Request (JSON): None
+
+    :return: info about the current song.
+    """
+    current_song = player._queue.current_audio
+
+    if current_song is None:
+        return with_status(None, 440, StatusType.NOOP)
+    else:
+        is_playing = player.player_is_playing()
+
+        data = {
+            "current_song": dictify_YoutubeAudio(current_song),
+            "is_playing": is_playing,
+            "time": player.player_get_time() if is_playing else None
+        }
+
+        return with_status(data, 200, StatusType.OK)
 
 
 @app.route("/play", methods=["POST"])

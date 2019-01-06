@@ -97,8 +97,15 @@ traits:
             body:
               application/json:
                 properties:
-                  queue: array
-                example: { "queue": [] }
+                  queue: Types.Queue
+                  current_song:
+                    type: integer
+                    description: Index of the current song
+                example: |
+                  {
+                    "queue": [],
+                    "current_song": 0
+                  }
 
     /add:
       post:
@@ -258,6 +265,45 @@ traits:
                 properties:
                   status: Types.Status
                 example: { "status": "error" }
+
+    /getCurrentSong:
+      get:
+        is: [commonErrors]
+        description: Returns info about the current song
+        responses:
+          200:
+            description: Returns the current song
+            body:
+              application/json:
+                properties:
+                  current_song: Types.YoutubeVideo
+                  is_playing: boolean
+                  time:
+                    description: Time in seconds, null if not playing
+                    type: integer
+                    required: false
+                  status: Types.Status
+                example: |
+                  {
+                    "current_song": {
+                        "video_id": "jLRw-Ahq22k",
+                        "title": "Snarky Puppy, Metropole Orkest - The Curtain",
+                        "length": 885,
+                        "username": "Snarky Puppy",
+                        "published": "2015-04-06 14:05:11",
+                        "viewcount": 2085988
+                      },
+                    "is_playing": true,
+                    "time": 125,
+                    "status": "ok"
+                  }
+          440:
+            description: No song is loaded
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "noop" }
 
     /play:
       post:
