@@ -196,28 +196,29 @@ async def player_previous():
         return with_status(None, 200, StatusType.OK)
 
 
-@app.route("/setTime", methods=["PATCH"])
+async def player_get_time():
+    # Return a 441 if no song is loaded
+    if not player.player_is_song_loaded():
+        return with_status(None, 441, StatusType.ERROR)
+
+    # Otherwise, return the data
+    data = {
+        "time": await player.player_get_time() or 0,
+        "total_length": player._queue.current_audio.length
+    }
+
+    return with_status(data, 200, StatusType.OK)
+
+
 async def player_set_time():
-    """
-    Full route /music/player/setTime
-
-    Request (JSON):
-        time: str (format: hh:mm:ss[:ms])
-
-    Move to the required time in the song.
-    """
     json = await get_json_from_request(request)
 
     audio_time = json.get("time")
     if not audio_time:
         return with_status({"message": "Missing 'time' field"}, 400, StatusType.BAD_REQUEST)
 
-    # Make sure that time is in the correct format
-    if re.match(time_regex, audio_time) is None:
-        return with_status({"message": "Malformed 'time' field"}, 400, StatusType.BAD_REQUEST)
-
     try:
-        time_in_float = process_time(audio_time)
+        time_in_float = int(audio_time)
     except TypeError:
         return with_status({"message": "Invalid 'time' format"}, 400, StatusType.BAD_REQUEST)
 
@@ -233,3 +234,22 @@ async def player_set_time():
             return with_status(None, 200, StatusType.OK)
         else:
             return with_status(None, 440, StatusType.NOOP)
+
+
+@app.route("/audioTime", methods=["GET", "PATCH"])
+async def player_audio_time():
+    """
+    Full route /music/player/audioTime (GET and PATCH)
+
+    GET: Get the current audio time.
+
+    PATCH: Move to the specified time in the song.
+    Request (JSON):
+        time: integer
+    """
+    if request.method == "GET":
+        return await player_get_time()
+    elif request.method == "PATCH":
+        return await player_set_time()
+    else:
+        return with_status(None, 400, StatusType.BAD_REQUEST)

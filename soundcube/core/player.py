@@ -50,6 +50,8 @@ class Player(metaclass=Singleton):
         except OSError:
             raise YoutubeException("invalid link")
 
+        queue_was_empty = self._queue.current_audio is None
+
         log.debug(f"Got audio from '{audio.title}':{audio.best_audio}, parsing took {round(time.time() - t_init, 3)}")
 
         # All if clauses keep track of song_index for use later
@@ -69,8 +71,8 @@ class Player(metaclass=Singleton):
         else:
             raise SoundcubeException(f"invalid PlayType: '{play_type}'")
 
-        # Load the song if specified
-        if set_playing is True:
+        # Load the song if specified or if it is the first song
+        if set_playing is True or queue_was_empty:
             self._queue.set_current_song(song_index)
             await self.player_load()
 
@@ -238,6 +240,12 @@ class Player(metaclass=Singleton):
 
         return bool(self.player.is_playing())
 
+    def player_is_song_loaded(self) -> bool:
+        """
+        :return: A boolean indicating if a song is loaded / loading.
+        """
+        return bool(self.player.get_media())
+
     async def player_get_time(self) -> Union[None, float]:
         """
         :return: None if no song is being played
@@ -250,7 +258,6 @@ class Player(metaclass=Singleton):
             return None
         else:
             return time_ms / 1000
-
 
     ###################
     # QUEUE FUNCTIONS

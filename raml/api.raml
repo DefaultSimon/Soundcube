@@ -446,15 +446,41 @@ traits:
                   status: Types.Status
                 example: { "status": "error" }
 
-    /setTime:
+    /audioTime:
+      get:
+        is: [commonErrors]
+        description: Get the current audio time
+        responses:
+          200:
+            description: Returns the audio time in seconds
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                  time: integer
+                  total_length: integer
+                example: |
+                  {
+                    "status": "ok",
+                    "time": 126,
+                    "total_length": 431
+                  }
+          441:
+            description: No song is playing
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "error" }
+
       patch:
         is: [commonErrors]
         description: Scrub the current song to a specified timestamp
         body:
           application/json:
             properties:
-              time: time-only
-            example: { "time": "00:05:15"}
+              time: number
+            example: { "time": 535}
         responses:
           200:
             description: Song playing from timestamp
