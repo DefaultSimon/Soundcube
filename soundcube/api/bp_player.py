@@ -69,7 +69,7 @@ async def player_get_current():
         data = {
             "current_song": dictify_YoutubeAudio(current_song),
             "is_playing": is_playing,
-            "time": player.player_get_time() if is_playing else None
+            "time": await player.player_get_time() if is_playing else None
         }
 
         return with_status(data, 200, StatusType.OK)
@@ -204,7 +204,8 @@ async def player_get_time():
     # Otherwise, return the data
     data = {
         "time": await player.player_get_time() or 0,
-        "total_length": player._queue.current_audio.length
+        "total_length": player._queue.current_audio.length,
+        "is_playing": player.player_is_playing()
     }
 
     return with_status(data, 200, StatusType.OK)
