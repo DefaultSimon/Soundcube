@@ -42,6 +42,7 @@ async def handle_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     # see https://stackoverflow.com/questions/32500073/request-header-field-access-control-allow-headers-is-not-allowed-by-itself-in-pr
     response.headers["Access-Control-Allow-Headers"] = "content-type"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
     return response
 
 # Run with `run.bat` (or `hypercorn server:app`)
