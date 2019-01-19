@@ -60,7 +60,7 @@ class Player(metaclass=Singleton):
             song_index = self._queue.append_to_queue(audio)
         # Always puts the song after the current one
         elif play_type == PlayType.NEXT:
-            song_index = self._queue._current + 1
+            song_index = self._queue.current_index + 1
             self._queue.insert_into_queue(audio, song_index)
         elif play_type == PlayType.AT_POSITION:
             if position is None:
@@ -82,7 +82,7 @@ class Player(metaclass=Singleton):
         :return: YoutubeAudio that was loaded
         """
         # If no song is set, start with the first one
-        if self._queue._current is None:
+        if self._queue.current_index is None:
             raise QueueException("no song is loaded")
 
         # Get current song:
@@ -100,7 +100,7 @@ class Player(metaclass=Singleton):
         :raise: PlayerException: problem while trying to create a new Media instance
         """
         # If no song is set, start with the first one
-        if self._queue._current is None:
+        if self._queue.current_index is None:
             self._queue.set_current_song(0)
 
         # Get current song from queue
@@ -179,6 +179,9 @@ class Player(metaclass=Singleton):
         if not audio:
             raise QueueException("no next song")
 
+        if self.player_is_playing():
+            await self.player_stop()
+
         self._update_media(audio)
         self.player.play()
 
@@ -196,8 +199,12 @@ class Player(metaclass=Singleton):
         :raise: PlayerException: problem while trying to create a new Media instance
         """
         audio: YoutubeAudio = self._queue.previous_audio
+        # TODO fix raising QueueException after moving around songs in queue
         if not audio:
             raise QueueException("no previous song")
+
+        if self.player_is_playing():
+            await self.player_stop()
 
         self._update_media(audio)
         self.player.play()
@@ -283,8 +290,18 @@ class Player(metaclass=Singleton):
         # so there is no need for backtracking if something goes haywire later because it shouldn't
         audio = self._queue.get_song_at(current_position)
 
+        # makes sure that (if a moved song is currently playing) the index of playing is updated as well
+        if self._queue.current_audio == audio:
+            update_playing_index = self._queue.current_index
+        else:
+            update_playing_index = False
+
         self._queue.insert_into_queue(audio, new_index)
         self._queue.remove_from_queue(current_position)
+
+        if update_playing_index is not False:
+            log.debug(f"Updating index after moving: {update_playing_index}")
+            self._queue.set_current_song(update_playing_index)
 
     ###################
     # VOLUME FUNCTIONS

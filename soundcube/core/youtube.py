@@ -6,7 +6,7 @@ from pafy.backend_shared import BasePafy, BaseStream
 
 from ..config import DEV_KEY
 from .exceptions import NoAudioStream
-from .utilities import resolve_time
+from .utilities import resolve_time, make_random_song_id
 
 log = logging.getLogger(__name__)
 
@@ -33,10 +33,11 @@ class YoutubeAudio:
 
     Mostly for use as queue objects.
     """
-    __slots__ = ("pafy", "best_audio",
+    __slots__ = ("unique_id", "pafy", "best_audio",
                  "title", "length", "videoid")
 
     def __init__(self, url: str):
+        self.unique_id = make_random_song_id(14)
         self.pafy: BasePafy = get_pafy(url)
 
         # Make sure streams are available
@@ -60,3 +61,9 @@ class YoutubeAudio:
 
     def __repr__(self):
         return f"<YoutubeAudio '{self.videoid}',{resolve_time(self.length)}>"
+
+    def __eq__(self, other):
+        if type(other) is YoutubeAudio:
+            return self.unique_id == other.unique_id
+        else:
+            return False

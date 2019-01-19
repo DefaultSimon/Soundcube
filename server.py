@@ -34,6 +34,7 @@ async def error_500(_):
 
     return with_status(data, 500, StatusType.INTERNAL_ERROR)
 
+
 # Register a handler to append Access-Control-Allow-Origin headers
 @app.after_request
 async def handle_headers(response):

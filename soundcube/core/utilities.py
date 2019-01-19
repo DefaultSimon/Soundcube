@@ -2,6 +2,7 @@
 #################
 # Utilities
 #################
+import uuid
 from typing import Union
 
 
@@ -82,3 +83,7 @@ def resolve_time(delta: int, sep: str = "") -> str:
 
     # If tm is less than a minute, do not add "and".
     return sep.join(fields)
+
+
+def make_random_song_id(length=12) -> int:
+    return int(str(uuid.uuid4().int)[:length])

@@ -41,7 +41,7 @@ async def queue_get():
 
     payload = {
         "queue": get_json_queue(),
-        "current_song": player._queue._current
+        "current_song": player._queue.current_index
     }
 
     return with_status(payload, 200, StatusType.OK)
@@ -141,12 +141,18 @@ async def queue_move():
     try:
         # Explanation of 'new + 1':
         # This makes sure that the song is inserted AFTER new_index
-        await player.queue_move(current, new + 1)
+        if current < new:
+            new += 1
+
+        await player.queue_move(current, new)
     except QueueException:
         return with_status(None, 441, StatusType.ERROR)
     else:
+        new_queue = get_json_queue()
+        log.debug(f"New queue: {','.join([repr(a) for a in new_queue])}")
+
         data = {
-            "new_queue": get_json_queue()
+            "new_queue": new_queue
         }
 
         return with_status(data, 200, StatusType.OK)

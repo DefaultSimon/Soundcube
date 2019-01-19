@@ -70,5 +70,6 @@ def dictify_YoutubeAudio(obj: YoutubeAudio) -> dict:
         "length": obj.length,
         "username": obj.pafy.username,
         "published": obj.pafy.published,
-        "viewcount": obj.pafy.viewcount
+        "viewcount": obj.pafy.viewcount,
+        "unique_id": obj.unique_id
     }

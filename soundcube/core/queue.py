@@ -1,6 +1,6 @@
 # coding=utf-8
 import logging
-from typing import List
+from typing import List, Union
 
 from .youtube import YoutubeAudio
 from .exceptions import QueueException
@@ -12,7 +12,7 @@ class PlayerQueue:
     def __init__(self):
         self.queue: List[YoutubeAudio] = []
         # Index of the music in queue that is currently playing
-        self._current: int = None
+        self.current_index: int = None
 
     def append_to_queue(self, audio: YoutubeAudio) -> int:
         """
@@ -55,7 +55,7 @@ class PlayerQueue:
         log.debug(f"New state of the queue: {self.queue}")
 
     @property
-    def current_audio(self):
+    def current_audio(self) -> Union[None, YoutubeAudio]:
         """
         :return: the current song
         """
@@ -63,7 +63,7 @@ class PlayerQueue:
             return None
 
         try:
-            return self.queue[self._current]
+            return self.queue[self.current_index]
         except (IndexError, TypeError):
             raise QueueException("no current song")
 
@@ -74,11 +74,11 @@ class PlayerQueue:
         :return: the new song
         """
         # Check if there is a next song
-        if (self._current + 1) > (len(self.queue) - 1):
+        if (self.current_index + 1) > (len(self.queue) - 1):
             # There is no next song
             return None
 
-        self._current += 1
+        self.current_index += 1
         return self.current_audio
 
     @property
@@ -88,11 +88,11 @@ class PlayerQueue:
         :return: the new song
         """
         # Check if there is a next song
-        if (self._current - 1) < 0:
+        if (self.current_index - 1) < 0:
             # There is no previous song
             return None
 
-        self._current -= 1
+        self.current_index -= 1
         return self.current_audio
 
     def set_current_song(self, index: int):
@@ -102,7 +102,7 @@ class PlayerQueue:
         if index > (len(self.queue) - 1):
             raise QueueException("this index doesn't exist")
 
-        self._current = index
+        self.current_index = index
 
     def get_song_at(self, index: int):
         """
