@@ -141,8 +141,8 @@ async def queue_move():
     try:
         # Explanation of 'new + 1':
         # This makes sure that the song is inserted AFTER new_index
-        if current < new:
-            new += 1
+        # if current < new:
+        #     new += 1
 
         await player.queue_move(current, new)
     except QueueException:

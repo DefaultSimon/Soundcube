@@ -86,6 +86,19 @@ traits:
                 status: Types.Status
               example: { "status": "ok" }
 
+  /youtubeApiKey:
+    get:
+      is: [commonErrors]
+      description: Returns a valid Youtube v3 API key for use in the react app
+      responses:
+        200:
+          body:
+            application/json:
+              properties:
+                status: Types.Status
+                api_key: string
+              example: { "status": "ok", "api_key": "ih3iaASioSD_aosidcxn125" }
+
 /music:
   /queue:
     /get:

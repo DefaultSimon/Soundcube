@@ -4,3 +4,7 @@ reload_on_change = true
 
 host = localhost
 port = 5000
+
+[APIs]
+googleApiKey =
+frontend_googleApiKey =

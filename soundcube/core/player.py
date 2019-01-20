@@ -199,7 +199,6 @@ class Player(metaclass=Singleton):
         :raise: PlayerException: problem while trying to create a new Media instance
         """
         audio: YoutubeAudio = self._queue.previous_audio
-        # TODO fix raising QueueException after moving around songs in queue
         if not audio:
             raise QueueException("no previous song")
 
@@ -287,17 +286,25 @@ class Player(metaclass=Singleton):
         :raise: QueueException: no song at this position
         """
         # This will raise a QueueException if the index doesn't exist,
-        # so there is no need for backtracking if something goes haywire later because it shouldn't
+        # so there is no need for backtracking if something goes haywire later
         audio = self._queue.get_song_at(current_position)
+        audio2 = self._queue.get_song_at(new_index)
 
         # makes sure that (if a moved song is currently playing) the index of playing is updated as well
         if self._queue.current_audio == audio:
-            update_playing_index = self._queue.current_index
+            update_playing_index = new_index
+        elif self._queue.current_audio == audio2:
+            update_playing_index = current_position
         else:
             update_playing_index = False
 
-        self._queue.insert_into_queue(audio, new_index)
-        self._queue.remove_from_queue(current_position)
+        # The order is reversed depending on the position of indexes
+        if current_position < new_index:
+            self._queue.insert_into_queue(audio, new_index + 1)
+            self._queue.remove_from_queue(current_position)
+        else:
+            self._queue.remove_from_queue(current_position)
+            self._queue.insert_into_queue(audio, new_index)
 
         if update_playing_index is not False:
             log.debug(f"Updating index after moving: {update_playing_index}")

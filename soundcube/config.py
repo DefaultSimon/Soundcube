@@ -8,9 +8,12 @@ player_c = configparser.ConfigParser()
 player_c.read("data/player.ini")
 
 # YouTube API key
-DEV_KEY = config.get("APIs", "googleapi", fallback=None)
-if not DEV_KEY:
-    raise RuntimeError("'googleapi' is missing in the config file!")
+BACKEND_API_KEY = config.get("APIs", "googleApiKey", fallback=None)
+FRONTEND_API_KEY = config.get("APIs", "frontend_googleApiKey", fallback=None)
+if not BACKEND_API_KEY:
+    raise RuntimeError("'googleApiKey' is missing in the config file!")
+if not FRONTEND_API_KEY:
+    raise RuntimeError("'frontend_googleApiKey' is missing in the config file!")
 
 # Player-related
 DEFAULT_VOLUME = config.get("Player", "default_volume", fallback=50)

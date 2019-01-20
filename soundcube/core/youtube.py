@@ -4,13 +4,13 @@ import logging
 import pafy
 from pafy.backend_shared import BasePafy, BaseStream
 
-from ..config import DEV_KEY
+from ..config import BACKEND_API_KEY
 from .exceptions import NoAudioStream
 from .utilities import resolve_time, make_random_song_id
 
 log = logging.getLogger(__name__)
 
-pafy.set_api_key(DEV_KEY)
+pafy.set_api_key(BACKEND_API_KEY)
 
 
 def get_pafy(url: str) -> BasePafy:
