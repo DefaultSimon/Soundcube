@@ -1,6 +1,6 @@
 [Server]
 app = "server:app"
-reload_on_change = true
+log_level = info
 
 host = localhost
 port = 5000

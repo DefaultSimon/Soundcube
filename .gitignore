@@ -15,3 +15,6 @@ __pycache__/
 !*_defaults.toml
 
 !*.example
+
+# React frontend
+react

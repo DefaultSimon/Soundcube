@@ -12,4 +12,7 @@ First, clone or download this repository: `git clone https://github.com/DefaultS
 Then, inside the repository, install the required dependencies with [pipenv](https://github.com/pypa/pipenv): `pipenv install`.
 
 After that, copy and modify the example configuration files in `data/` to proper extensions, set your desired settings and you're set!  
+
+As for serving the React frontend, make a production build with `npm run build` in [Soundcube-frontend](https://github.com/DefaultSimon/Soundcube-frontend) and copy the `build/` directory inside `react` (e.g. so the complete path to index.html is `react/build/index.html`).
+
 Now, run the Soundcube server using `run.sh`/`run.bat`, depending on your platform.

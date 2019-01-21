@@ -5,6 +5,8 @@ from quart import Quart
 from soundcube.api.web_utilities import with_status
 from soundcube.api._bp_types import StatusType
 
+from soundcube.config import API_ROUTE_PREFIX
+
 log = logging.getLogger(__name__)
 app = Quart(__name__)
 
@@ -19,11 +21,13 @@ from soundcube.api.bp_ping import app as bp_ping
 from soundcube.api.bp_player import app as bp_player
 from soundcube.api.bp_queue import app as bp_queue
 from soundcube.api.bp_auth import app as bp_auth
+from soundcube.api.bp_serve import app as bp_serve
 
-app.register_blueprint(bp_ping)
-app.register_blueprint(bp_queue, url_prefix="/music/queue")
-app.register_blueprint(bp_player, url_prefix="/music/player")
-app.register_blueprint(bp_auth, url_prefix="/auth")
+app.register_blueprint(bp_ping, url_prefix=API_ROUTE_PREFIX)
+app.register_blueprint(bp_queue, url_prefix=API_ROUTE_PREFIX + "/music/queue")
+app.register_blueprint(bp_player, url_prefix=API_ROUTE_PREFIX + "/music/player")
+app.register_blueprint(bp_auth, url_prefix=API_ROUTE_PREFIX + "/auth")
+app.register_blueprint(bp_serve)
 
 
 # Global error handlers
@@ -48,4 +52,4 @@ async def handle_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
     return response
 
-# Run with `run.bat` (or `hypercorn server:app`)
+# Run with `run.bat` (or `unicorn [OPTIONS] server:app`)
