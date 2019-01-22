@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "df899f765613b3de4ddb5ae63272fb8ae22aed1652ba9b5b3cb4ce3544ee77ff"
+            "sha256": "f1ca906cecd890f95f4b162bc36b266f67a7a27fbe801b7aa05155999b354654"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -45,10 +45,10 @@
         },
         "h2": {
             "hashes": [
-                "sha256:4be613e35caad5680dc48f98f3bf4e7338c7c429e6375a5137be7fbe45219981",
-                "sha256:b2962f883fa392a23cbfcc4ad03c335bcc661be0cf9627657b589f0df2206e64"
+                "sha256:c8f387e0e4878904d4978cd688a3195f6b169d49b1ffa572a3d347d7adc5e09f",
+                "sha256:fd07e865a3272ac6ef195d8904de92dc7b38dc28297ec39cfa22716b6d62e6eb"
             ],
-            "version": "==3.0.1"
+            "version": "==3.1.0"
         },
         "hpack": {
             "hashes": [
@@ -62,6 +62,7 @@
                 "sha256:84c53ef8248a4067c6ec0b7c9a8a850eed2c85e660b1afdaac37f4f8cc8420f2",
                 "sha256:d3bd0ec5f6377f3eb1aea85314b74ef6720ab5e28be4afb8cced038efea9c6b9"
             ],
+            "index": "pypi",
             "version": "==0.4.6"
         },
         "hyperframe": {
@@ -225,10 +226,10 @@
         },
         "uvicorn": {
             "hashes": [
-                "sha256:da097b6508a8d28c6933b80d8b11af33bc3bd361ab72530ad2778352301efbc9"
+                "sha256:d35a75fb057e23115a66168dfa31e72f87d2b1063f2877bc463e70009eb6eb33"
             ],
             "index": "pypi",
-            "version": "==0.3.29"
+            "version": "==0.3.30"
         },
         "websockets": {
             "hashes": [

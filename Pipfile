@@ -13,6 +13,7 @@ pafy = "*"
 python-vlc = "*"
 youtube-dl = "*"
 uvicorn = "*"
+hypercorn = "*"
 
 [requires]
 python_version = "3.7"
