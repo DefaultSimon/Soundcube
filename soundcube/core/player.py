@@ -275,6 +275,22 @@ class Player(metaclass=Singleton):
 
         :raise: QueueException: no song at this position
         """
+        # Move to a different song if playing the one that is being removed
+        if self._queue.current_index == position:
+            log.info("Trying to remove song, but it is playing; loading next/previous")
+            try:
+                # The entire queue moved up, adjust for this
+                self._queue.set_current_song(self._queue.current_index - 1)
+
+                await self.player_next()
+            except QueueException:
+                try:
+                    await self.player_previous()
+                except QueueException:
+                    log.info("No song remaining, stopping")
+            finally:
+                await self.player_stop()
+
         self._queue.remove_from_queue(position)
 
     async def queue_move(self, current_position: int, new_index: int):
