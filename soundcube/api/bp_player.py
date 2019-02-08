@@ -272,7 +272,13 @@ async def player_volume_set():
     # Validate data
     if volume is None:
         return with_status({"message": "Missing 'volume' field."}, 400, StatusType.BAD_REQUEST)
-    elif not (0 > volume < 100):
+
+    try:
+        volume = int(volume)
+    except TypeError:
+        return with_status({"message": "'volume' is not a number"}, 400, StatusType.BAD_REQUEST)
+
+    if not (0 <= volume <= 100):
         return with_status({"message": "'volume' not in range 0-100"}, 400, StatusType.BAD_REQUEST)
 
     player.set_volume(volume)
