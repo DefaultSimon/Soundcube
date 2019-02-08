@@ -254,3 +254,46 @@ async def player_audio_time():
         return await player_set_time()
     else:
         return with_status(None, 400, StatusType.BAD_REQUEST)
+
+
+async def player_volume_get():
+    # no json
+    data = {
+        "volume": player.get_volume()
+    }
+
+    return with_status(data, 200, StatusType.OK)
+
+
+async def player_volume_set():
+    json = await get_json_from_request(request)
+
+    volume = json.get("volume")
+    # Validate data
+    if volume is None:
+        return with_status({"message": "Missing 'volume' field."}, 400, StatusType.BAD_REQUEST)
+    elif not (0 > volume < 100):
+        return with_status({"message": "'volume' not in range 0-100"}, 400, StatusType.BAD_REQUEST)
+
+    player.set_volume(volume)
+
+    return with_status(None, 200, StatusType.OK)
+
+
+@app.route("/audioVolume", methods=["GET", "POST"])
+async def player_audio_volume():
+    """
+    Full route /music/player/audioVolume (GET and POST)
+
+    GET: Get the current volume
+
+    POST: Set the volume (0-100)
+    Request (JSON):
+        volume: integer
+    """
+    if request.method == "GET":
+        return await player_volume_get()
+    elif request.method == "POST":
+        return await player_volume_set()
+    else:
+        return with_status(None, 400, StatusType.BAD_REQUEST)

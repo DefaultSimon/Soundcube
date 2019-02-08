@@ -19,8 +19,8 @@ if not FRONTEND_API_KEY:
     raise RuntimeError("'frontend_googleApiKey' is missing in the config file!")
 
 # Player-related
-DEFAULT_VOLUME = config.get("Player", "default_volume", fallback=50)
-VOLUME_STEP = config.get("Player", "volume_change_step", fallback=5)
+DEFAULT_VOLUME = player_c.get("Player", "default_volume", fallback=50)
+VOLUME_STEP = player_c.get("Player", "volume_change_step", fallback=5)
 
 API_ROUTE_PREFIX = config.get("Routes", "api_prefix", fallback="/api/v1")
 

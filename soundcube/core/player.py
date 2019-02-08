@@ -11,7 +11,7 @@ from .exceptions import PlayerException, SoundcubeException, QueueException, You
 from .utilities import resolve_time, clamp, Singleton
 from .queue import PlayerQueue
 
-from ..config import DEFAULT_VOLUME, VOLUME_STEP
+from ..config import DEFAULT_VOLUME
 from ..api._bp_types import PlayType
 
 log = logging.getLogger(__name__)
@@ -26,8 +26,8 @@ class Player(metaclass=Singleton):
 
         self.loop: asyncio.AbstractEventLoop = loop
 
-        self._current_volume = self._last_volume = DEFAULT_VOLUME
-        self._is_muted: bool = False
+        self._current_volume = DEFAULT_VOLUME
+        self.set_volume(self._current_volume)
 
     ###################
     # PLAYER FUNCTIONS
@@ -343,57 +343,7 @@ class Player(metaclass=Singleton):
         """
         amount = clamp(amount, 0, 100)
 
-        # Store previous volume so we can mute and unmute
-        self._last_volume = self._current_volume
-        self._current_volume = amount
-
         self.player.audio_set_volume(amount)
-
-    def volume_increase(self, amount: int = VOLUME_STEP) -> int:
-        """
-        Shorthand function for setting a louder volume.
-        :param amount: int between 0 and 100
-        :return: int - new volume
-        """
-        new_volume = clamp(self.get_volume() + amount, 0, 100)
-
-        self.set_volume(new_volume)
-        return new_volume
-
-    def volume_decrease(self, amount: int = VOLUME_STEP) -> int:
-        """
-        Shorthand function for setting a quieter volume.
-        :param amount: int between 0 and 100
-        :return: int - new volume
-        """
-        new_volume = clamp(self.get_volume() - amount, 0, 100)
-
-        self.set_volume(new_volume)
-        return new_volume
-
-    def mute(self) -> bool:
-        """
-        Mute the sound output (set volume to 0) and remember the previous volume.
-        :return: bool indicating if the mute was done
-        """
-        if self._is_muted:
-            return False
-
-        self.set_volume(0)
-        self._is_muted = True
-        return True
-
-    def unmute(self) -> bool:
-        """
-        Unmute the sound output (set volume to previous one).
-        :return: bool indicating if the unmute was done
-        """
-        if self._is_muted:
-            return False
-
-        self.set_volume(self._last_volume)
-        self._is_muted = False
-        return True
 
     ###################
     # INTERNAL FUNCTIONS

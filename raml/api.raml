@@ -518,3 +518,40 @@ traits:
                 properties:
                   status: Types.Status
                 example: { "status": "error" }
+
+
+    /audioVolume:
+      get:
+        is: [commonErrors]
+        description: Get the current player volume
+        responses:
+          200:
+            body:
+              application/json:
+                properties:
+                  volume: Types.Volume
+                  status: Types.Status
+                example: { "volume": 50, status: "ok" }
+      post:
+        is: [commonErrors]
+        description: Set the player volume
+        body:
+          application/json:
+            properties:
+              volume: Types.Volume
+            example: { "volume": 25 }
+        responses:
+          200:
+            description: Volume changed
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "ok" }
+          400:
+            description: Invalid "volume" argument
+            body:
+              application/json:
+                properties:
+                  status: Types.Status
+                example: { "status": "bad_request" }
