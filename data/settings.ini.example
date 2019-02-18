@@ -5,6 +5,12 @@ log_level = info
 host = localhost
 port = 5000
 
+public_url =
+
+[Routes]
+api_prefix = /api/v1
+build_location = frontend/build/
+
 [APIs]
 googleApiKey =
 frontend_googleApiKey =

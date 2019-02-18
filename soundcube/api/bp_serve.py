@@ -8,12 +8,12 @@ import os
 import logging
 from quart import Blueprint, send_from_directory
 
-from ..config import HOST, PORT
+from ..config import PUBLIC_URL, PORT, FRONTEND_BUILD_LOCATION
 
-BP_DIR = os.path.abspath(os.path.dirname(__file__))
-STATIC_FOLDER = os.path.normpath(os.path.join(BP_DIR, "../../react/build/static"))
-TEMPLATE_FOLDER = os.path.normpath(os.path.join(BP_DIR, "../../react/build"))
+STATIC_FOLDER = os.path.join(FRONTEND_BUILD_LOCATION, "static")
+TEMPLATE_FOLDER = FRONTEND_BUILD_LOCATION
 
+INDEX_HTML = os.path.join(FRONTEND_BUILD_LOCATION, "index.html")
 JS_FOLDER = os.path.join(STATIC_FOLDER, "js")
 CSS_FOLDER = os.path.join(STATIC_FOLDER, "css")
 
@@ -29,8 +29,8 @@ async def index(path):
     """
     if path == "":
         # So we don't have to deal with templating stuff
-        with open("react/build/index.html") as f:
-            page = f.read().replace("{{soundcube_host}}", str(HOST))
+        with open(INDEX_HTML) as f:
+            page = f.read().replace("{{soundcube_host}}", str(PUBLIC_URL))
             page = page.replace("{{soundcube_port}}", str(PORT))
 
             return page
