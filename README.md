@@ -1,18 +1,22 @@
 # Soundcube
-### A Raspberry Pi-hosted audio server
+### A Raspberry Pi (or anything else, really)-hosted audio server
 ###### This is the backend repository, see [Soundcube-frontend](https://github.com/DefaultSimon/Soundcube-frontend) for the React frontend portion of this project.
 ![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)
 ![Status: Alpha](https://img.shields.io/badge/status-alpha-orange.svg)  
 
 This is a work-in-progress project, no stability is guaranteed.
 
+## Requirements
+This project requires *Python 3.7+* as well *NodeJS* and *npm* (>= 10).
 
 ## Installation
-First, clone or download this repository: `git clone https://github.com/DefaultSimon/Soundcube.git`  
-Then, inside the repository, install the required dependencies with [pipenv](https://github.com/pypa/pipenv): `pipenv install`.
+*(This guide assumes you're using Linux)*
 
-After that, copy and modify the example configuration files in `data/` to proper extensions, set your desired settings and you're set!  
+- clone this repository: `git clone https://github.com/DefaultSimon/Soundcube.git`  
+- fetch the submodule(s): `git submodule init && git submodule update`
+- install the required Python dependencies with [pipenv](https://github.com/pypa/pipenv): `pipenv install --python 3.7`
+- make a production React build by running `cd frontend && ./build_production.sh`
 
-As for serving the React frontend, make a production build with `npm run build` in [Soundcube-frontend](https://github.com/DefaultSimon/Soundcube-frontend) and copy the `build/` directory inside `react` (e.g. so the complete path to index.html is `react/build/index.html`).
+After that, copy and modify the example configuration files in `data/` to proper extensions (from .ini.example to .ini), fill them out and you're done!  
 
-Now, run the Soundcube server using `run.sh`/`run.bat`, depending on your platform.
+Finally, run the Soundcube server using `run.sh`.
