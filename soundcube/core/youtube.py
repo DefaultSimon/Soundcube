@@ -34,7 +34,7 @@ class YoutubeAudio:
     Mostly for use as queue objects.
     """
     __slots__ = ("unique_id", "pafy", "best_audio",
-                 "title", "length", "videoid")
+                 "title", "length", "videoid", "thumbnail")
 
     def __init__(self, url: str):
         self.unique_id = make_random_song_id(14)
@@ -56,6 +56,15 @@ class YoutubeAudio:
         self.title = self.pafy.title
         self.length = self.pafy.length
         self.videoid = self.pafy.videoid
+
+        self.thumbnail = None
+        # Tries better qualities first, falls back to worse ones
+        if self.pafy.bigthumbhd is not None:
+            self.thumbnail = self.pafy.bigthumbhd
+        elif self.pafy.bigthumb is not None:
+            self.thumbnail = self.pafy.bigthumb
+        else:
+            self.thumbnail = self.pafy.thumb
 
         # TODO fetch gdata in the background
 
