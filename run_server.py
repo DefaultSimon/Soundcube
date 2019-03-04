@@ -1,10 +1,9 @@
 # coding=utf-8
 ######################
-# Hypercorn Command
-# This script puts together hypercorn arguments for use in e.g. a batch script
-# The batch script receives the arguments via stdout
+# Uvicorn starter
+# This script puts together uvicorn arguments and uses os.system to start it
 ######################
-
+import os
 from soundcube.config import config
 
 arg_list = []
@@ -26,5 +25,5 @@ if LOG_LEVEL:
 # Add the app location at the end
 arg_list.append(APP)
 
-# Output the full command
-print("uvicorn " + " ".join(arg_list), flush=True, end="")
+# Start the uvicorn server
+os.system("uvicorn " + " ".join(arg_list))

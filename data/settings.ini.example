@@ -1,5 +1,5 @@
 [Server]
-app = "server:app"
+app = soundcube_server:app
 log_level = info
 
 host = localhost
