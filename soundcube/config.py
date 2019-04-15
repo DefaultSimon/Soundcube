@@ -29,9 +29,9 @@ if not FRONTEND_BUILD_LOCATION:
 else:
     FRONTEND_BUILD_LOCATION = os.path.abspath(FRONTEND_BUILD_LOCATION)
 
-PUBLIC_URL = config.get("Server", "public_url", fallback="localhost")
+PUBLIC_URL = config.get("Server", "public_url", fallback=HOST)
 if PUBLIC_URL in ("0.0.0.0", "localhost", "127.0.0.1"):
-    log.warning(f"'PUBLIC_URL' is set to '{PUBLIC_URL}', this is for development use only!")
+    log.warning(f"'PUBLIC_URL' is set to '{PUBLIC_URL}', this might not work and is for development use only, use only if you know what you are doing!")
 
 # Player-related
 DEFAULT_VOLUME = player_c.getint("Player", "default_volume", fallback=50)

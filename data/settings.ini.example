@@ -1,16 +1,31 @@
 [Server]
-app = soundcube_server:app
+app = server:app
+
+# Logging levels:
+# - critical
+# - error
+# - warning
+# - info
+# - debug
 log_level = info
 
+# Host and port on which the server should host
 host = localhost
-port = 5000
+port = 8080
 
+# Useful for complex hosting cases, leave empty otherwise
+# This is the host to which the browser connects for requests
 public_url =
 
 [Routes]
+# Should be left alone, specifies some app-breaking values
 api_prefix = /api/v1
 build_location = frontend/build/
 
 [APIs]
+# Get your keys here:
+# https://console.developers.google.com/apis/dashboard
+# Both keys have to be YouTube API keys
+# They can be the same (but not recommended)
 googleApiKey =
 frontend_googleApiKey =
